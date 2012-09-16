@@ -1,5 +1,55 @@
 %!TEX root = ../diffusion_paper.tex
 \section{Methods} % (fold)
 \label{sec:methods}
+  \subsection{Transformational Diffusion Algorithm} % (fold)
+  \label{sub:transformational_diffusion_algorithm}
+    
+  % subsection transformational_diffusion_algorithm (end)
+    
+  \subsection{Simulating Diffusion on Synthetic Geometries} % (fold)
+  \label{sub:simulating_diffusion_on_synthetic_geometries}
+  
+    \begin{figure}[htbp]
+      \centering
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_straight_banana}}
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_straight_0}}
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_straight_1}}
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_straight_20}}
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_straight_perfect}}\\
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_rt_banana}}
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_rt_0}}
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_rt_1}}
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_rt_20}}
+      \subfloat[]{\includegraphics[width=0.2\pagewidth]{3_results/Figs/cross_section_rt_perfect}}
+      \caption{2 sets of cross-sections of synthetic volumes before diffusion, after 1 iteration and after 20 iterations, with unperturbed cross-sections as references. Volumes (a-d) were constructed from identically positioned slices before noise was added, as is evident from (d). Two out-of-phase translational and rotational oscillations, most evident in (h), form the underlying signal in (e-h).}
+      \label{fig:synthetic_cross_sections}
+    \end{figure}
+    
+    \begin{figure}[htbp]
+      \centering
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_straight_banana}}
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_straight_0}}
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_straight_1}}
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_straight_20}}
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_rt_banana}}
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_rt_0}}
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_rt_1}}
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_rt_20}}
+      \caption{Contours of synthetic volumes before diffusion, after 1 iteration and after 20 iterations. Green and red.}
+      \label{fig:synthetic_contours}
+    \end{figure}
+    
+    % Evolution of error from ground truth
+    \begin{figure}[htbp]
+      \centering
+      % 3d graph with each iteration of smoothing for rt volume
+      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_1_20}}
+      % 2d graph of error before smoothing, after 20 smoothings, and after banana registration for straight volume
+      % 2d graph of error before smoothing, after 20 smoothings, and after banana registration for rt volume
+      \caption{Evolution.}
+      \label{fig:synthetic_contours}
+    \end{figure}
+    
+  % subsection simulating_diffusion_on_synthetic_geometries (end)
 
 % section methods (end)

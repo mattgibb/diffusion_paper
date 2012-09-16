@@ -118,5 +118,16 @@
   % Note that, LaTeX2e, unlike IEEE journals, places footnotes above bottom
   % floats. This can be corrected via the \fnbelowfloat command of the
   % stfloats package.
-
+  
+  \begin{figure}[htbp]
+    \centering
+    \subfloat[]{\includegraphics[width=0.4\pagewidth]{1_motivation_and_aims/Figs/whole_hires}}
+    \subfloat[]{\includegraphics[width=0.4\pagewidth]{1_motivation_and_aims/Figs/whole_lores}}\\
+    \subfloat[]{\includegraphics[width=0.4\pagewidth]{1_motivation_and_aims/Figs/zoom_hires}}
+    \subfloat[]{\includegraphics[width=0.4\pagewidth]{1_motivation_and_aims/Figs/zoom_lores}}
+    \caption{Figure on starting point, showing dataset images, whole and with zoom}
+    \label{fig:synthetic_cross_sections}
+  \end{figure}
+    
+  
 % section motivation_and_aims (end)
