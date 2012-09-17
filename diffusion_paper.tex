@@ -20,7 +20,7 @@
 
 % *** CITATION PACKAGES ***
 %
-%\usepackage{cite}
+\usepackage{cite}
 % cite.sty was written by Donald Arseneau
 % V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
 % \cite{} output to follow that of IEEE. Loading the cite package will
@@ -44,12 +44,12 @@
 % *** GRAPHICS RELATED PACKAGES ***
 %
 \ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
+  \usepackage[pdftex]{graphicx}
   % declare the path(s) where your graphic files are
-  % \graphicspath{{../pdf/}{../jpeg/}}
+  \graphicspath{{1_motivation_and_aims/Figs/}{1_methods/Figs/}{3_results/Figs/}{4_discussion_and_conclusions/Figs/}}
   % and their extensions so you won't have to specify these with
   % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+  \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
 \else
   % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
   % will default to the driver specified in the system graphics.cfg if no
@@ -169,7 +169,7 @@
 
 
 % *** SUBFIGURE PACKAGES ***
-\usepackage[tight,footnotesize]{subfigure}
+% \usepackage[tight,footnotesize]{subfigure}
 % subfigure.sty was written by Steven Douglas Cochran. This package makes it
 % easy to put subfigures in your figures. e.g., "Figure 1a and 1b". For IEEE
 % work, it is a good idea to load it with the tight package option to reduce
@@ -181,8 +181,8 @@
 
 
 
-\usepackage[caption=false]{caption}
-\usepackage[font=footnotesize]{subfig}
+% \usepackage[caption=false]{caption}
+% \usepackage[font=footnotesize]{subfig}
 % subfig.sty, also written by Steven Douglas Cochran, is the modern
 % replacement for subfigure.sty. However, subfig.sty requires and
 % automatically loads Axel Sommerfeldt's caption.sty which will override
@@ -192,7 +192,7 @@
 % IEEEtran.cls handing of captions. Version 1.3 (2005/06/28) and later 
 % (recommended due to many improvements over 1.2) of subfig.sty supports
 % the caption=false option directly:
-% \usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage[caption=false,font=footnotesize]{subfig}
 %
 % The latest version and documentation can be obtained at:
 % corollary
@@ -284,7 +284,7 @@
 
 % *** PDF, URL AND HYPERLINK PACKAGES ***
 %
-%\usepackage{url}
+\usepackage{url}
 % url.sty was written by Donald Arseneau. It provides better support for
 % handling and breaking URLs. url.sty is already installed on most LaTeX
 % systems. The latest version can be obtained at:
@@ -403,9 +403,9 @@ IEEEtran, journal, \LaTeX, paper, template.
 \IEEEpeerreviewmaketitle
 
 \input{1_motivation_and_aims/motivation_and_aims}
-\input{2_methods/methods}
-\input{3_results/results}
-\input{4_discussion_and_conclusions/discussion_and_conclusions}
+% \input{2_methods/methods}
+% \input{3_results/results}
+% \input{4_discussion_and_conclusions/discussion_and_conclusions}
 
 % if have a single appendix:
 %\appendix[Proof of the Zonklar Equations]
