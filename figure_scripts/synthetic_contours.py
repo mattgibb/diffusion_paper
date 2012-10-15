@@ -20,3 +20,9 @@ for i in (0,1,7,40):
     noisy_path = paths.noisy_path("200_alpha0.4rt", i)
     print noisy_path
     extract_contour(noisy_path)
+
+extract_contour(paths.perfect_path("200_alpha0.4rt"))
+
+banana_path = paths.dummy_root + "200_alpha0.4rt/HiResPairs/BananaTransforms/CenteredAffineTransform_1/"
+print(banana_path)
+extract_contour(banana_path)
