@@ -28,6 +28,17 @@ generate_perfect_slice() {
   flip_and_convert_slice $TIFF_PATH $PDF_PATH
 }
 
+generate_banana_slice() {
+  # build arguments
+  VOLUME_PATH=results/dummy/200_alpha0.4rt/HiResPairs/BananaTransforms/CenteredAffineTransform_1/HiRes_colour.mha
+  TIFF_PATH=2_methods/Figs/0450.tiff
+  PDF_PATH=2_methods/Figs/cross_section_banana.pdf
+  
+  # generate slices
+  extract_slice $VOLUME_PATH 2_methods/Figs 0 0450
+  flip_and_convert_slice $TIFF_PATH $PDF_PATH
+}
+
 # generate noisy slices
 for iteration in 0 1 7 40; do
   echo iteration: $iteration
@@ -35,7 +46,12 @@ for iteration in 0 1 7 40; do
   echo
 done
 
-# # generate perfect slices
+# generate perfect slices
 echo perfect slice
 generate_perfect_slice
+echo
+
+# generate banana slices
+echo banana slice
+generate_banana_slice
 echo
