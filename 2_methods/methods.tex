@@ -5,36 +5,36 @@
   \label{sub:transformational_diffusion_algorithm}
     
   % subsection transformational_diffusion_algorithm (end)
-    
+  
   \subsection{Simulating Diffusion on Synthetic Geometries} % (fold)
   \label{sub:simulating_diffusion_on_synthetic_geometries}
+    % pipeline figure
+    \begin{figure}[!t]
+      \centering
+      % \includegraphics[width=1.1in]{2_methods/Figs/pipeline}
+      \caption{This is a figure of the pipeline.}
+      \label{fig:pipeline}
+    \end{figure}
     
     \begin{figure}[!t]
       \centering
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_straight_banana}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_straight_0}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_straight_1}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_straight_20}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_straight_perfect}}\\
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_rt_banana}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_rt_0}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_rt_1}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_rt_20}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_rt_perfect}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_0}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_1}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_7}}\\
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_40}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_perfect}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_banana}}
       \caption{2 sets of cross-sections of synthetic volumes before diffusion, after 1 iteration and after 20 iterations, with unperturbed cross-sections as references. Volumes (a-d) were constructed from identically positioned slices before noise was added, as is evident from (d). Two out-of-phase translational and rotational oscillations, most evident in (h), form the underlying signal in (e-h).}
       \label{fig:synthetic_cross_sections}
     \end{figure}
     
     \begin{figure}[!t]
       \centering
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/contours_straight_banana}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/contours_straight_0}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/contours_straight_1}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/contours_straight_20}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/contours_rt_banana}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/contours_rt_0}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/contours_rt_1}}
-      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/contours_rt_20}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_0}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_1}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_7}}\\
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_40}}
+      \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_banana}}
       \caption{Contours of synthetic volumes before diffusion, after 1 iteration and after 20 iterations. Green and red.}
       \label{fig:synthetic_contours}
     \end{figure}
@@ -43,7 +43,7 @@
     \begin{figure}[!t]
       \centering
       % 3d graph with each iteration of smoothing for rt volume
-      \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_1_20}}
+      % \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_1_20}}
       % 2d graph of error before smoothing, after 20 smoothings, and after banana registration for straight volume
       % 2d graph of error before smoothing, after 20 smoothings, and after banana registration for rt volume
       \caption{Evolution.}
@@ -51,5 +51,536 @@
     \end{figure}
     
   % subsection simulating_diffusion_on_synthetic_geometries (end)
+  
+  This section introduces and details transformational diffusion smoothing in full, in a manner driven by the requirements of the problem at hand. A revision of the theoretical underpinnings of 1-dimensional brownian motion is followed by some simple simulation of diffusion on a discrete grid. In a similar vein, a mathematical exposition of transformational diffusion is followed by its application in several simulated geometries with added artificial affine noise.
+  
+	\subsection{1D Brownian Diffusion} % (fold)
+	\label{sub:a_1d_random_walk_analogy}
+    The central limit theorem states that the mean of a sufficiently large number of independent random variables will be approximately normally distributed, regardless of their individual distribution. Indeed, Einstein's theory of the Brownian motion of a diffusive particle is based on this precept. With this in mind, the simplest model of microscopic diffusion is one in which a particle may move in a random walk in one dimension along the integer number line $\mathbb{Z}$, in steps of either $+1$ or $-1$, with equal probability. Taking each step as an independent random variable $Z_1, Z_2,\ldots$, if the particle's position $S$ starts at $S_0 = 0$, we can express the position of the particle after $N$ steps as
+    
+	  \begin{equation}
+	    S_N = \sum\limits_{i=1}^N Z_i .
+	  \end{equation}
+	  The probability of taking $k$ positive steps out of a total of $N$ steps is given by
+	  \begin{equation}
+	    P(k;N) = \binom{N}{k}\left(\frac{1}{2} \right)^N,
+	  \end{equation}
+	  where the binomial coefficient
+	  \begin{equation}
+	    \label{eq:registration:binomial-coefficient}
+	     \binom{N}{k} = \frac{N!}{k!(N-k)!},
+	  \end{equation}
+	  since there are $\binom{N}{k}$ possible ways of taking $k$ and $N - k$ steps of $-1$ and $+1$, respectively. At each independent step, the probability of taking one or the other direction is $\frac{1}{2}$, leading to the product $\frac{1}{2}^N$.
+  
+	  The de Moivre-Laplace Theorem states that in the limit of large $N$, and in the neighbourhood of $N/2$, the binomial distribution of $k$, and thus of $S_N$, approximates a Gaussian. That is,
+    
+	  \begin{equation}
+	    \label{eq:registration:gaussian-approximation}
+	    \binom{N}{k}\left(\frac{1}{2}\right)^N \approx \sqrt{\frac{2}{\pi N}} \
+	      e^{-2(k - \frac{N}{2})^2/N}.
+	  \end{equation}
+    
+	  We might consider a concentration of particles $f$ over a discrete 1-dimensional grid $x$, where a proportion $\alpha$ of the particles at each point jump to each of the two neighbouring points per unit time:
+    
+    \begin{equation}
+	    \frac{d f(x, t)}{d t} = \alpha (f(x - \Delta x, t) - 2f(x, t) + f(x + \Delta x, t)).
+    \end{equation}
+    
+    After a small discretised timestep $\Delta t$, and to first order approximation, a proportion $2\alpha \Delta t$ of the particles have taken one step, such that half of them have diffused to the left and half to the right:
+  	
+	  \begin{gather}
+	    \Delta f(x, t + \Delta t) = \alpha \Delta t(f(x - \Delta x, t) - 2f(x, t) + f(x + \Delta x, t)). \\
+	    f(x_i, t_{n+1}) = f(x_i, t_n) + \alpha (f(x_{i-1}, t_n) - 2f(x_i, t_n) + f(x_{i+1}, t_n)), \label{eqn:diffusion_1d}.
+		\end{gather}
+  	
+	  This diffusion will of course act to smooth and homogenise $f$, since regions of high concentration relative to their neighbours will be reduced, and those of low concentration augmented. It is also clear from (\ref{eq:registration:gaussian-approximation}) that multiple application of this smoothing operation approximates a Gaussian diffusion smoothing.
+		
+	% subsection a_1d_random_walk_analogy (end)
+	
+	\subsection{Simulating 1D Diffusion} % (fold)
+	\label{sub:simulating_1d_diffusion}
+	  \begin{figure}[t!]
+	    \centering
+			\subfloat[][0 iterations]{\includegraphics[width=1.1in]{2_methods/Figs/1d_noise_000}}
+			\subfloat[][15 iterations]{\includegraphics[width=1.1in]{2_methods/Figs/1d_noise_015}}
+			\subfloat[][299 iterations]{\includegraphics[width=1.1in]{2_methods/Figs/1d_noise_299}}
+	    \caption{A 1-dimensional simulation of microscopic diffusion, with $\alpha = 0.4$. A numerical approximation of a sine wave is graphed in blue, on 200 equispaced points from $0$ to $2\pi$. Random noise from a Gaussian distribution is added, with variance equal to the amplitude of the sine wave, and is plotted in green in \textbf{(a)}. \textbf{(b)} and \textbf{(c)} show the evolution of the noise after 15 and 299 timesteps respectively.}
+		  \label{fig:1d_diffusion}
+	  \end{figure}
+	  
+	  This process can be simulated quite trivially. The result 
+  
+	  Our purpose is to smooth out the high frequency random noise from the green wave as quickly and as computationally cheaply as is possible, whilst maintaining the underlying low frequency signal. There is a tradeoff to be made when deciding upon a value for $\alpha$. The greater $\alpha$, the more particles move to the left and right at each iteration, and so the faster the noise is damped. But when $\alpha$ approaches 0.5, almost all of the particles from each bin are moving out at each iteration, and unstable oscillations start to appear. In Figure~\ref{fig:1d_diffusion}, $\alpha$ is set to 0.4, a great compromise between speed of smoothing and stability. If $\alpha$ is set closer to 0.5, the highest frequency is actually damped much more slowly, as oscillatory `swapping' effects start to appear. If $\alpha$ is set to 0.51, the system becomes unstable. This is not entirely surprising, since it is unphysical for more than all of the particles to diffuse out of a particular bin at each timestep.
+	% subsection simulating_1d_diffusion (end)
+	
+  \subsection{Transformational Diffusion Smoothing} % (fold)
+  \label{sub:transformational_diffusion_smoothing}
+    \subsubsection{Algorithm Overview} % (fold)
+    \label{ssub:algorithm_overview}
+  	  Our goal is to develop an iterative process that `diffuses' each histological slice image toward its neighbours, in order to smooth out high-frequency transformational noise, whilst maintaining the low-frequency underlying geometry of the volume. An ITK transform $\mathbf{T}$ acting on a point $\mathbf{p}$ maps points in the resampling space to points in the original image space:
+		  
+  		\begin{equation}
+  			\mathbf{p'} = \mathbf{Tp}.
+  		\end{equation}
+      
+  		At iteration $n$ of the proposed process, each slice $i$ in a reconstructed histological stack has associated with it an invertible transform $\mathbf{T}_i^n$. We define the `diffusion transform' $\mathbf{\Delta T}_i^{n,n+1}$, which is formulated to move slice $i$ towards slices $i-1$ and $i+1$, based on the results of registrations between adjacent slices. $\mathbf{\Delta T}_i^{n,n+1}$ is pre-applied to a point in the resampling space of $i$ before $\mathbf{T}_i^n$ to give the adjusted transform $\mathbf{T}_i^{n+1}$, such that
+		  
+    	\begin{equation}
+  			\mathbf{T}_i^{n+1} = \mathbf{T}_i^n \mathbf{\Delta T}_i^{n,n+1}. \label{eqn:adjusted_transforms}
+  		\end{equation}
+		  
+	  How would this $\mathbf{\Delta T}_i^{n,n+1}$ be defined?
+		
+    % subsubsection algorithm_overview (end)
+    
+    \subsubsection{Formulating the Diffusion Transforms} % (fold)
+    \label{ssub:formulating_the_diffusion_transforms}
+      In the case of 1-dimensional diffusion, we can reformulate the right hand side of (\ref{eqn:diffusion_1d}) into two separate terms thusly:
+     
+	  \begin{align}
+	    f(x_i, t_{n+1}) &= f(x_i, t_n) + \alpha ((f(x_{i+1}, t_n) - f(x_i, t_n)) - (f(x_{i-1}, t_n) - f(x_i, t_n)) \\
+			\Delta f_i^{n,n+1} &= \alpha (\Delta f_{i,i+1}^n - \Delta f_{i-1,i}^n) \\
+			                   &= \alpha \Delta f_{i,i-1}^n + \alpha \Delta f_{i,i+1}^n, \label{eqn:1d_diffusion_operator}
+		\end{align}
+		
+    where $\Delta f_i^{m,n}$ is the difference in $f$ at position $i$ between timestep $m$ and timestep $n$, and $\Delta f_{i,j}^m$ is the difference in $f$ between position $i$ and position $j$ at timestep $m$. From (\ref{eqn:1d_diffusion_operator}), we can see that at each timestep, the concentration at each bin moves towards its left and right neighbour by a proportion $\alpha$ of its difference from each, respectively.
+		
+	  We might, then, propose analogously that
+		
+		\begin{equation}
+		 	\mathbf{\Delta T}_i^{n,n+1} = \alpha \cdot \mathbf{\Delta T}_{i,i+1}^n \oplus \alpha \cdot \mathbf{\Delta T}_{i,i-1}^n, \label{eqn:transformational_placeholder}
+		\end{equation}
+	 	
+	 	where $\mathbf{\Delta T}_{i,j}^n = (\mathbf{\Delta T}_{j,i}^n)^{-1}$ is defined as the transformation that registers a histological slice $i$ to slice $j$ at iteration $n$, operator $\cdot$ is a placeholder for a binary operator on a scalar and a transform, and operator $\oplus$ is a placeholder for a binary operator on a pair of transforms. We are now equipped to calculate the transforms for progressively smoother and smoother volumes, by first registering each slice to its neighbour to obtain $\mathbf{\Delta T}_{i,i+1}^n$, then computing the diffusion transforms $\mathbf{\Delta T}_i^{n,n+1}$ through \labelcref{eqn:transformational_placeholder}, and finally applying them to the original transforms through \labelcref{eqn:adjusted_transforms} to obtain $\mathbf{T}_i^{n+1}$. The question now emerges: what precise form do the two binary operators take? We will start by outlining their desirable properties, and then discuss implementations that satisfy these constraints.
+    % subsubsection formulating_the_diffusion_transforms (end)
+		
+    \subsubsection{Formulating the Transform Operators} % (fold)
+    \label{ssub:formulating_the_transform_operators}
+		The operator $\cdot$ takes two operands: a scalar and a transform. We would like $0$ to be the null operand on $\mathbf{T}$, so that when $\alpha = 0$, no diffusion occurs. We would like $1$ to be the identity operand on $\mathbf{T}$, so that when $\alpha = 1$, the transform from each term in (\ref{eqn:transformational_placeholder}) would diffuse the slice exactly to the position of its equivalent neighbour. Ideally, we would also like addition of the scalar operand to distribute over the serial application of the resultant transforms, so that transforms vary smoothly and naturally with respect to the scalar operand. This final condition can be satisfied for certain transforms, such as linear transforms and vector field transforms, but cannot be satisfied in general for others, such as b-spline transforms. To summarise in mathematical form, we would like the following to hold:
+		
+		\begin{gather}
+			0 \cdot \mathbf{T} = \mathbf{I} \label{eqn:null} \\
+			1 \cdot \mathbf{T} = \mathbf{T} \label{eqn:identity} \\
+			(\alpha \cdot \mathbf{T}) (\beta \cdot \mathbf{T}) = (\alpha + \beta) \cdot \mathbf{T} \label{eqn:distributivity}
+		\end{gather}
+	 	
+	  The operator $\oplus$ takes two transform operands. Commutativity must hold if the diffusion is to be symmetric i.e. behave identically if the order of the slices is reversed. If statistics are to be calculated on more than two transformations, it is also necessary for associativity to hold, so that the order of application of operator $\oplus$ is not preferential to any subset of transform operands. That is,
+		
+		\begin{gather}
+			\forall \mathbf{S}, \mathbf{T} : \mathbf{S} \oplus \mathbf{T} = \mathbf{T} \oplus \mathbf{S} \label{eqn:commutativity} \\
+			\forall \mathbf{S}, \mathbf{T} : (\mathbf{S} \oplus \mathbf{T}) \oplus \mathbf{U} = \mathbf{S} \oplus (\mathbf{T} \oplus \mathbf{U}). \label{eqn:associativity}
+		\end{gather}
+		
+		Unfortunately, commutativity rules out the straightforward serial application of transforms. For example, in the general case of matrix multiplication, $AB \ne BA$. One solution is to use the transform that is equivalent to returning the Euclidian midpoint of $\mathbf{Sp}$ and $\mathbf{Tp}$ for all $\mathbf{p}$. However, the result may not always be representable by some types of transform (notably b-spline transforms), and further, it may be dependent on the order that the $\oplus$ operator is applied. In group theoretical terms, two axioms of the group $(\mathbf{T},\oplus)$ are violated: closure and associativity. Aside from anything else, the Euclidian midpoint approach leads in many cases to unnatural results, such as the `bulging' effect noted in \cite{Arsigny2005a}, and the null matrix in 2D between transforms separated by a rotation of $\pi$.
+        
+        In the case of rotation matrices, it seems sensible to return the sum of the two angles; and for similarity transforms, the product of the two enlargement factors. Inductively therefore, the operator $\oplus$ would do well to return the summation of some appropriate parameterisation of the operand transforms. The challenge is set to find that parameterisation.
+		
+	  It is elucidating to consider the general mathematical form constrained by \labelcref{eqn:null,eqn:identity,eqn:distributivity,eqn:commutativity,eqn:distributivity} applied to concrete classes of transform, in order of increasing complexity: translation transforms, rotation transforms, similarity transforms, affine transforms and more general deformable transforms. An ITK affine transform $\mathbf{T}$ acting on a point $\mathbf{p}$ consists of a matrix transformation $\mathbf{M}$, followed by a translation by an offset vector $\mathbf{o}$:
+		
+		\begin{equation}
+			\mathbf{p'} = \mathbf{Tp}= \mathbf{Mp} + \mathbf{o}.
+		\end{equation}
+		
+		In the simplest case of translation transforms, where $\mathbf{M}$ is the identity matrix $\mathbf{I}$ i.e. $\mathbf{Tp} = \mathbf{p} + \mathbf{o}$, the two translation parameters are independent and individually identical to the 1-dimensional diffusion in (\ref{eqn:1d_diffusion_operator}). Operator $\cdot$ is a scalar multiplication of each offset parameter, and operator $\oplus$ is the commutative serial application of the transforms (or equivalently, addition of the respective parameters):
+		
+		\begin{align}
+			(\alpha \cdot \mathbf{T}) \mathbf{p} &= \mathbf{p} + \alpha\mathbf{o} \label{eqn:translation_cdot}\\
+			(\mathbf{S} \oplus \mathbf{T}) \mathbf{p} &= \mathbf{STp} \\
+			                                          &= \mathbf{p} + \mathbf{o_S} + \mathbf{o_T} \label{eqn:translation_oplus}
+		\end{align}
+		
+		Clearly, these two operators satisfy \labelcref{eqn:null,eqn:identity,eqn:distributivity,eqn:commutativity,eqn:associativity}. (\ref{eqn:transformational_placeholder}) becomes
+		
+		\begin{align}
+		 	\mathbf{\Delta T}_i^{n,n+1} \mathbf{p} &= (\alpha \mathbf{\Delta T}_{i,i-1}^n) (\alpha \mathbf{\Delta T}_{i,i+1}^n) \mathbf{p} \\
+			\mathbf{p} + \mathbf{o}_i^{n,n+1} &= \mathbf{p} + \alpha \mathbf{o}_{i,i-1}^n + \alpha \mathbf{o}_{i,i+1}^n \\
+			\mathbf{o}_i^{n,n+1} &= \alpha (\mathbf{o}_{i,i-1}^n + \mathbf{o}_{i,i+1}^n) 
+		\end{align}
+		
+		The offsets are therefore trivially analogous to (\ref{eqn:1d_diffusion_operator}).
+		
+		In the case of rigid transforms, $\mathbf{M}$ is a rotation matrix
+		
+		\begin{equation}
+			\mathbf{R}(\theta) = \left( \begin{matrix}
+			  										 \cos \theta & -\sin\theta \\
+														 \sin\theta & \cos\theta
+					                 \end{matrix} \right) .
+		\end{equation}
+		
+		In 2 dimensions, rotation matrices commute, and the result of their multiplication is simply a rotation matrix with angle equal to the sum of the operands' angles; in the special case where there are no offsets, then serial application of the transforms is a candidate for operator $\oplus$ according to (\ref{eqn:commutativity}):
+		
+		\begin{equation}
+			\mathbf{S} \oplus \mathbf{T} = \mathbf{R}(\theta_\mathbf{S})\mathbf{R}(\theta_\mathbf{T}) = \mathbf{R}(\theta_\mathbf{S} + \theta_\mathbf{T}) = \mathbf{T} \oplus \mathbf{S}
+		\end{equation}
+		
+		
+		In a similar vein, an operator $\cdot$ that multiplies the angle of the input transform with $\alpha$ fulfils criteria \labelcref{eqn:null,eqn:identity,eqn:distributivity}:
+    
+    \begin{equation}
+      \alpha \cdot \mathbf{T} = R(\alpha\theta).
+    \end{equation}
+		
+        In the case of similarity transforms with no offset, $\mathbf{M}$ is a rotation matrix $\mathbf{R}$ multiplied by an enlargement $\sigma$:
+        
+        \begin{equation}
+            \mathbf{T} = \sigma\mathbf{R}(\theta).
+        \end{equation}
+        
+        Since scalar multiplications commute with matrix transformations, if the operator $\cdot$ is constructed to scale geometrically, the situation is very similar to that of rotation matrices and \labelcref{eqn:null,eqn:identity,eqn:distributivity,eqn:commutativity,eqn:associativity} still apply:
+        
+        \begin{gather}
+            \alpha \cdot \mathbf{T} = e^{\alpha\ln\sigma}R(\alpha\theta) \\
+            (\alpha \cdot \mathbf{T})(\beta \cdot \mathbf{T}) = e^{(\alpha + \beta)\ln\sigma}R((\alpha + \beta)\theta) = (\alpha + \beta) \cdot \mathbf{T} \\
+			\mathbf{S} \oplus \mathbf{T} = \sigma_\mathbf{S}\mathbf{R}(\theta_\mathbf{S})\sigma_\mathbf{T}\mathbf{R}(\theta_\mathbf{T}) = \sigma_\mathbf{S}\sigma_\mathbf{T}\mathbf{R}(\theta_\mathbf{S} + \theta_\mathbf{T}) = \mathbf{T} \oplus \mathbf{S} \\
+			(\mathbf{S} \oplus \mathbf{T}) \oplus \mathbf{U} = \sigma_\mathbf{S}\sigma_\mathbf{T}\sigma_\mathbf{U}\mathbf{R}(\theta_\mathbf{S} + \theta_\mathbf{T} + \theta_\mathbf{U}) = \mathbf{S} \oplus (\mathbf{T} \oplus \mathbf{U}).
+        \end{gather}
+		
+		In the more general case of diagonalisable affine matrix transformations, in the absence of translations, and when $\mathbf{S}$ and $\mathbf{T}$ can be diagonalised by the same matrix $\mathbf{V}$ i.e. $\mathbf{S} = \mathbf{VD_SV}^{-1}$ and $\mathbf{T} = \mathbf{VD_TV}^{-1}$, commutativity still holds for serial application:
+        
+        \begin{equation}
+			\mathbf{S} \oplus \mathbf{T} = \mathbf{ST} = \mathbf{VD_SV}^{-1}\mathbf{VD_TV}^{-1} = \mathbf{VD_SD_TV}^{-1} =\mathbf{VD_TD_SV}^{-1} = \mathbf{T} \oplus \mathbf{S},
+        \end{equation}
+        
+        with associativity of course holding for the serial application of affine transformations in general. However, when $\mathbf{M_S}$ and $\mathbf{M_T}$ no longer commute, serial application of transforms is no longer sufficient. There is also no obvious form of operator $\cdot$ which satisfies \labelcref{eqn:null,eqn:identity,eqn:distributivity}. We must take recourse to a more general formulation of operators $\cdot$ and $\oplus$.
+        
+        It is here that we must introduce the concept of the matrix exponential:
+        
+        \begin{equation}
+          e^{\mathbf{M}} = \sum_{k=0}^{\infty}\frac{1}{k!}\mathbf{M}^k. \label{eqn:matrix_exponential}
+        \end{equation}
+        
+        Conversely, a logarithm $\mathbf{L}$ of a matrix $\mathbf{M}$ is another matrix such that $e^\mathbf{L} = \mathbf{M}$. For any invertible matrix $\mathbf{Y}$, it is clear that
+        
+        \begin{gather}
+          (\mathbf{YM}\mathbf{Y}^{-1})^n = \mathbf{Y}\mathbf{M}^n\mathbf{Y}^{-1}, n \in \mathbb{N}.
+        \end{gather}
+        
+        It then follows from (\ref{eqn:matrix_exponential}) that
+        
+        \begin{align}
+          \mathbf{Y}e^{\mathbf{M}}\mathbf{Y}^{-1} &= \mathbf{Y}\left(\sum_{k=0}^{\infty}\frac{1}{k!}\mathbf{M}^k\right)\mathbf{Y}^{-1} \\
+                                                  &= \sum_{k=0}^{\infty}\frac{1}{k!}\mathbf{Y}\mathbf{M}^k\mathbf{Y}^{-1} \\
+                                                  &= \sum_{k=0}^{\infty}\frac{1}{k!}(\mathbf{YM}\mathbf{Y}^{-1})^k \label{eqn:diagonal_exp} \\
+                                                  &= e^{\mathbf{YM}\mathbf{Y}^{-1}}.
+        \end{align}
+        
+        If $\mathbf{M}$ is diagonalisable, and we choose a $\mathbf{Y}$ that diagonalises $\mathbf{M}$, such that $\mathbf{D} = \mathbf{YMY}^{-1}$, (\ref{eqn:diagonal_exp}) becomes trivially analogous to the Taylor expansion for a scalar exponential, and we can then simply compute the exponential of each diagonal element of $\mathbf{D}$. It follows that the logarithm of a positive definite diagonal matrix can be computed by taking the logarithm of each of its elements.
+        
+        It turns out that when a matrix $\mathbf{M}$ has a logarithm $\mathbf{L}$, $\mathbf{M}$ is in a Lie group --- a group on a smooth manifold. $\mathbf{L}$ is the corresponding element of the associated Lie algebra. $\mathbf{L}$ is an `infinitessimal generator', and its value determines the tangent space at the identity $\mathbf{I}$. Informally, this means that there exists a matrix $\mathbf{I} + \epsilon \mathbf{L}$ that is extremely close to the identity, such that when applied repeatedly an extremely large number of times i.e. $(\mathbf{I} + \epsilon \mathbf{L})^n$, the result eventually becomes $\mathbf{M}$.
+        
+        If we define operator $\cdot$ in terms of the exponential and the logarithm of $\mathbf{M}$, \labelcref{eqn:null,eqn:identity,eqn:distributivity} are all satisfied:
+        
+        \begin{gather}
+          \alpha \cdot \mathbf{M} = e^{\alpha\ln\mathbf{M}} \\
+          0 \cdot \mathbf{M} = e^0 = \mathbf{I} \\
+          1 \cdot \mathbf{M} = e^{\ln\mathbf{M}} = \mathbf{M} \\
+          (\alpha \cdot \mathbf{M})(\beta \cdot \mathbf{M}) = e^{\alpha\ln\mathbf{M}}e^{\beta\ln\mathbf{M}}
+                                                            = e^{(\alpha + \beta)\ln\mathbf{M}}
+                                                            = (\alpha + \beta) \cdot \mathbf{M}.
+        \end{gather}
+        
+        We can define operator $\oplus$ as a simple addition of the matrix logarithms in log-Euclidian space, followed by a mapping back to transform space with the exponential operator:
+        
+        \begin{equation}
+          \mathbf{M_S} \oplus \mathbf{M_T} = e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}}
+        \end{equation}
+        
+        Because all operations are homomorphic with Euclidian vector space, this operator always fulfils the commutativity and associativity criteria
+        
+        \begin{gather}
+          \mathbf{M_S} \oplus \mathbf{M_T} = e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}} = \mathbf{M_T} \oplus \mathbf{M_S} \\
+          (\mathbf{M_S}\oplus\mathbf{M_T})\oplus\mathbf{M_U} = e^{\ln\mathbf{M_S} + \ln\mathbf{M_T} + \ln\mathbf{M_U}} = \mathbf{M_S}\oplus(\mathbf{M_T}\oplus\mathbf{M_U})
+        \end{gather}
+        
+        It is pleasing to note that this new formula coincides with the special cases of rotation, similarity and diagonalisability discussed previously, since whenever the two matrices commute,
+        
+        \begin{equation}
+          \mathbf{M_SM_T} = e^{\ln\mathbf{M_S}}e^{\ln\mathbf{M_T}} = e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}} = \mathbf{M_S} \oplus \mathbf{M_T}.
+        \end{equation}
+        
+        This `log-Euclidian' approach is expounded with Titanic mathematical rigour in \cite{Arsigny2005}. However, being motivated by the interpolation of MRI data, the treatise is limited to tensors; that is, symmetric matrices with no translation.
+        
+		    So far, the discussion has been limited to cases with zero offset. When offsets are introduced, even when their respective matrices commute, the commutativity of transforms in (\ref{eqn:commutativity}) no longer holds when serial action akin to (\ref{eqn:translation_oplus}) is introduced na\"ively:
+		    
+        \begin{equation}
+          (\mathbf{S} \oplus \mathbf{T})\mathbf{p} = (\mathbf{M_S} \oplus \mathbf{M_T})\mathbf{p} + \mathbf{M_So_T} + \mathbf{o_S} \ne (\mathbf{T} \oplus \mathbf{S})\mathbf{p}.
+        \end{equation}
+        
+        If commutivity is forced, by averaging the offset contributions from both permutations of the operands i.e.
+        
+        \begin{equation}
+          (\mathbf{S} \oplus \mathbf{T})\mathbf{p} = (\mathbf{T} \oplus \mathbf{S})\mathbf{p} = (\mathbf{M_S} \oplus \mathbf{M_T})\mathbf{p} + \frac{1}{2}\left(\left( \mathbf{M_S} + \mathbf{I} \right) \mathbf{o_T} + \mathbf{o_S}\right),
+        \end{equation}
+        
+        then associativity breaks down. The same underlying structure precludes a linear interpolation in operator $\cdot$ akin to \labelcref{eqn:translation_cdot} in the presence of a non-identical matrix:
+        
+        \begin{gather}
+          (\alpha \cdot \mathbf{T})(\beta \cdot \mathbf{T})\mathbf{p} = \mathbf{M}_{\alpha+\beta}\mathbf{p} + \beta\mathbf{M}_{\alpha}\mathbf{o} + \alpha\mathbf{o} \ne (\alpha + \beta) \cdot \mathbf{T}
+        \end{gather}
+        
+        When $\mathbf{I} - \mathbf{M}$ is invertible --- that is, when none of the eigenvalues of $\mathbf{M}$ are equal to 1 --- we can express a transform as a matrix transformation about a single invariant centre, with no offset:
+        
+        \begin{gather}
+          \mathbf{Tp} = \mathbf{Mp} + \mathbf{o} = \mathbf{M}(\mathbf{p}-\mathbf{c}) + \mathbf{c} \\
+          \mathbf{o} = (\mathbf{I} - \mathbf{M})\mathbf{c} \\
+          \mathbf{c} = (\mathbf{I} - \mathbf{M})^{-1}\mathbf{o}.
+        \end{gather}
+        
+        We can then reformulate operator $\cdot$ as a log-Euclidian transformation about this invariant centre and satisfy distributivity:
+        
+        \begin{gather}
+          \alpha \cdot \mathbf{T} = e^{\alpha\ln\mathbf{M}}(p - c) + c \label{eqn:affine_cdot} \\
+          \begin{split}
+            (\alpha \cdot \mathbf{T})(\beta \cdot \mathbf{T}) &= e^{\alpha\ln\mathbf{M}}((e^{\beta\ln\mathbf{M}}(p - c) + c) - c) + c \\
+                                                              &= e^{\alpha\ln\mathbf{M}}(e^{\beta\ln\mathbf{M}}(p - c)) + c \\
+                                                              &= e^{(\alpha + \beta)\ln\mathbf{M}}(p - c) + c \\
+                                                              &= (\alpha + \beta) \cdot \mathbf{T}
+          \end{split}
+        \end{gather}
+        
+        With this condition satisfied, $\alpha\cdot\mathbf{T}$ is equivalent to $\mathbf{T}^{\alpha}$. In order to derive the common centre of the two operands of operator $\oplus$, let us consider the infinitesimal case
+        
+        \begin{gather}
+          \delta \cdot \mathbf{U} = (\delta \cdot \mathbf{S}) \oplus (\delta \cdot \mathbf{T}) \approx (\delta \cdot \mathbf{S}) (\delta \cdot \mathbf{T}) \\
+          \begin{split}
+            e^{\delta(\ln \mathbf{M_S} + \ln \mathbf{M_T})}\mathbf{p} + (\mathbf{I} - e^{\delta(\ln \mathbf{M_S} + \ln \mathbf{M_T})})\mathbf{c_U} =
+              &e^{\delta \ln \mathbf{M_S}}e^{\delta \ln \mathbf{M_T}}\mathbf{p} \\
+              &+ e^{\delta \ln \mathbf{M_S}}(\mathbf{I} - e^{\delta \ln \mathbf{T}})\mathbf{c_T} \\
+              &+ (\mathbf{I} - e^{\delta \ln \mathbf{M_S}})\mathbf{c_S}. \label{eqn:infinitesimal_oplus}
+          \end{split}
+        \end{gather}
+        
+        We can see from the series in (\ref{eqn:matrix_exponential}) that
+        
+        \begin{equation}
+          e^{\delta \ln \mathbf{M}} = \mathbf{I} + \delta \ln \mathbf{M} + \mathcal{O}((\delta \ln \mathbf{M})^2).
+        \end{equation}
+        
+        Applying this to (\ref{eqn:infinitesimal_oplus}), we obtain
+        
+        \begin{equation}
+          (\ln\mathbf{M_S} + \ln\mathbf{M_T})\mathbf{c_U} = (\ln\mathbf{M_S})\mathbf{c_S} + (\ln\mathbf{M_T})\mathbf{c_T}.
+        \end{equation}
+        
+        The general form of operator $\oplus$ is then finally
+        
+        \begin{gather}
+          \mathbf{S} \oplus \mathbf{T} = e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}}(\mathbf{p} - \mathbf{c}) + \mathbf{c}, \nonumber \\
+          \mathbf{c} = (\ln\mathbf{M_S} + \ln\mathbf{M_T})^{-1}((\ln\mathbf{M_S})\mathbf{c_S} + (\ln\mathbf{M_T})\mathbf{c_T}). \label{eqn:affine_oplus}
+        \end{gather}
+        
+        Commutativity is evident by inspection, and associativity is simply demonstrated:
+        
+        \begin{gather}
+          \begin{split}
+            (\mathbf{S} \oplus \mathbf{T}) \oplus \mathbf{U} &= \exp(\ln(e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}}) + \ln\mathbf{M_U})(\mathbf{p} - \mathbf{c}) + \mathbf{c} \\
+                                                             &= e^{\ln\mathbf{M_S} + \ln\mathbf{M_T} + \ln\mathbf{M_U}}(\mathbf{p} - \mathbf{c}) + \mathbf{c},
+          \end{split} \\
+          \begin{split}
+            \mathbf{c} &= (\ln\mathbf{M_{S \oplus T}} + \ln\mathbf{M_U})^{-1}((\ln\mathbf{M_{S \oplus T}})\mathbf{c_{S \oplus T}} + (\ln\mathbf{M_U})\mathbf{c_U}) \\
+                       &= (\ln\mathbf{M_S} + \ln\mathbf{M_T} + \ln\mathbf{M_U})^{-1}((\ln\mathbf{M_U})\mathbf{c_S} + (\ln\mathbf{M_U})\mathbf{c_T} + (\ln\mathbf{M_U})\mathbf{c_U}).
+          \end{split}
+        \end{gather}
+        
+        As a last algebraic-structural perk, it can be shown from \labelcref{eqn:affine_cdot,eqn:affine_oplus} that the operation of $\cdot$ by a scalar distributes over the operation of $\oplus$ on two affine transformations. In particular,
+        
+        \begin{equation}
+          (\alpha \cdot \mathbf{S}) \oplus (\alpha \cdot \mathbf{T}) = \alpha \cdot (\mathbf{S} \oplus \mathbf{T}).
+        \end{equation}
+        
+        In the case where $\mathbf{M} - \mathbf{I}$ is singular and there is no central invariate coordinate along the singular dimensions, it is of course natural that operator $\cdot$ interpolates the translation coordinates linearly along those dimensions as in (\ref{eqn:translation_cdot}), and that operator $\oplus$ sums translations arithmetically as in (\ref{eqn:translation_oplus}).
+        
+        A similar Lie theoretical approach must be taken when implementing operators $\cdot$ and $\oplus$ for more general non-rigid transforms, such as displacement field transforms. However, any differentiable transform will approximate an affine transformation at scales smaller than its curvature, and the implementations expounded here will suffice to smooth out those smaller subregions.
+    % subsubsection formulating_the_transform_operators (end)
+  % subsection transformational_diffusion_smoothing (end)
+	
+  \subsection{Simulating Transformational Diffusion} % (fold)
+  \label{sub:simulating_transformational_diffusion}
+  In order to test the efficacy of the algorithm in a quantitative way, it was necessary to devise several test geometries. Four stacks of 200 identical slices were constructed: one straight column with identical transforms for each slice; one column with sinusoidal, snake-like translation added; one column with sinusoidal rotation added; and one column incorporating both a translational and a rotational signal. The transform parameters of each slice were then purturbed by random Gaussian noise, with translational $\sigma$ equal to twice the amplitude of the translational signal, and the matrix element $\sigma$ equal to .
+  
+  The process of registration between slices, of obtaining the values $\mathbf{\Delta T}_{i,i+1}^n$, is orthogonal to the calculation of the diffusion transforms $\mathbf{\Delta T}_i^{n,n+1}$ and subsequent adjustment of each slice transform $\mathbf{T}_i^{n+1}$. The first attempt to test the algorithm used the original heart slice image shown in Figure~\ref{fig:original_displacement}. Although the algorithm was reliably stable in smoothing the small amplitudes of noise it was designed to correct for, it was found that much larger perturbations could be damped by the algorithm, limited only by the success of the individual registrations. All registrations were therefore performed using the manual segmentations shown in Figure~\ref{fig:segmented_displacement}, with which much larger displacements could be corrected. As will be seen, cross-sections were then reconstructed from the original images, to show the effects of correction on the fine detail of the tissue, whilst clean volume isosurfaces were constructed from the segmentation.
+  
+  % straight
+  \begin{figure}[htbp]
+    \centering
+    % filename format: cross_section_200_alpha0.4_ITERATION_DIMENSION_SLICE
+    % \subfloat[][with noise (0 iterations)]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_0_0_352}\label{fig:subfig1}}
+    % \subfloat[][1 iteration]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_1_0_352}\label{fig:subfig2}}
+    % \subfloat[][3 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_3_0_352}\label{fig:subfig3}}
+    % \subfloat[][8 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_8_0_352}\label{fig:subfig4}}
+    % \subfloat[][20 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_20_0_352}\label{fig:subfig4}}
+    % % filename format: cross_section_perfect_200_alpha0.4_DIMENSION_SLICE
+    % \subfloat[][without noise]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_perfect_200_alpha0.4_0_352}}
+    \caption{Cross-sections of the straight volume, perpendicular to the x-axis.}
+    \label{fig:cross_section_0}
+  \end{figure}
+  
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_0_1_431}}
+    % \subfloat[][1 iteration]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_1_1_431}}
+    % \subfloat[][3 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_3_1_431}}
+    % \subfloat[][8 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_8_1_431}}
+    % \subfloat[][20 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4_20_1_431}}
+    % \subfloat[][without noise]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_perfect_200_alpha0.4_1_431}}
+    \caption{Cross-sections of the straight volume, perpendicular to the y-axis.}
+    \label{fig:cross_section_1}
+  \end{figure}
+    
+  % rotated
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_0_0_352}}
+    % \subfloat[][1 iteration]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_1_0_352}}
+    % \subfloat[][3 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_3_0_352}}
+    % \subfloat[][8 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_8_0_352}}
+    % \subfloat[][20 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_20_0_352}}
+    % \subfloat[][without noise]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_perfect_200_alpha0.4r_0_352}}
+    \caption{Cross-sections of the rotating volume, perpendicular to the x-axis.}
+    \label{fig:cross_section_0r}
+  \end{figure}
+  
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_0_1_431}}
+    % \subfloat[][1 iteration]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_1_1_431}}
+    % \subfloat[][3 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_3_1_431}}
+    % \subfloat[][8 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_8_1_431}}
+    % \subfloat[][20 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4r_20_1_431}}
+    % \subfloat[][without noise]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_perfect_200_alpha0.4r_1_431}}
+    \caption{Cross-sections of the rotating volume, perpendicular to the y-axis.}
+    \label{fig:cross_section_1r}
+  \end{figure}
+  
+  % translated
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_0_0_352}}
+    % \subfloat[][1 iteration]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_1_0_352}}
+    % \subfloat[][3 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_3_0_352}}
+    % \subfloat[][8 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_8_0_352}}
+    % \subfloat[][20 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_20_0_352}}
+    % \subfloat[][without noise]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_perfect_200_alpha0.4t_0_352}}
+    \caption{Cross-sections of the translating volume, perpendicular to the x-axis.}
+    \label{fig:cross_section_0t}
+  \end{figure}
+  
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_0_1_431}}
+    % \subfloat[][1 iteration]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_1_1_431}}
+    % \subfloat[][3 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_3_1_431}}
+    % \subfloat[][8 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_8_1_431}}
+    % \subfloat[][20 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4t_20_1_431}}
+    % \subfloat[][without noise]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_perfect_200_alpha0.4t_1_431}}
+    \caption{Cross-sections of the translating volume, perpendicular to the y-axis.}
+    \label{fig:cross_section_1t}
+  \end{figure}
+    
+  % rotated and translated
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_0_0_352}}
+    % \subfloat[][1 iteration]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_1_0_352}}
+    % \subfloat[][3 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_3_0_352}}
+    % \subfloat[][8 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_8_0_352}}
+    % \subfloat[][20 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_20_0_352}}
+    % \subfloat[][without noise]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_perfect_200_alpha0.4rt_0_352}}
+    \caption{Cross-sections of the rotating and translating volume, perpendicular to the x-axis.}
+    \label{fig:cross_section_0rt}
+  \end{figure}
+  
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_0_1_431}}
+    % \subfloat[][1 iteration]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_1_1_431}}
+    % \subfloat[][3 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_3_1_431}}
+    % \subfloat[][8 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_8_1_431}}
+    % \subfloat[][20 iterations]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_200_alpha0.4rt_20_1_431}}
+    % \subfloat[][without noise]{\includegraphics[height=0.4\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/cross_section_perfect_200_alpha0.4rt_1_431}}
+    \caption{Cross-sections of the rotating and translating volume, perpendicular to the y-axis.}
+    \label{fig:cross_section_1rt}
+  \end{figure}
+  
+  The central cross-sections perpendicular to the x- and y-axes of the four regimes are exhibited in Figures~\labelcref{fig:cross_section_0,fig:cross_section_1,fig:cross_section_0r,fig:cross_section_1r,fig:cross_section_0t,fig:cross_section_1t,fig:cross_section_0rt,fig:cross_section_1rt}. The first section in each is of the original unsmoothed noisy volume, and the last of the volume before noise was added. Four images are sandwiched by these two extremes, of sections smoothed 1, 3, 8 and 20 times. The smoothing performs extremely well on two fronts. By iteration 20, a smooth, continuous section with the appearance of an original histology slice has been recovered from an unrecognisably noisy volume. Secondly and crucially, the underlying geometry of the tissue has been preserved, and the sections appear very similar to the ground truth sections before the noise had been added.
+  
+  % mean squared differences 3D
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][straight column]{\includegraphics[height=0.33\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/segmentation_mean_square_differences_3D}}
+    % \subfloat[][rotation]{\includegraphics[height=0.33\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/segmentation_mean_square_differences_3Dr}}
+    % \subfloat[][translation]{\includegraphics[height=0.33\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/segmentation_mean_square_differences_3Dt}}
+    % \subfloat[][rotation and translation]{\includegraphics[height=0.33\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/segmentation_mean_square_differences_3Drt}}
+    \caption{The 3D evolution of mean squared pixel intensity differences between adjacent slices for each of the four geometrical regimes.}
+    \label{fig:mean_squared_differences_3D}
+  \end{figure}
+  
+  Registration was performed using the mean square difference metric, and Figure~\ref{fig:mean_squared_differences_3D} graphs the evolving mean squared pixel intensity difference between each slice and its successor after repeated applications of the smoothing algorithm. In all four geometrical regimes, and for all slices away from the boundaries, the metric is greatly reduced, evidence that each slice is much more closely aligned with its neighbours. Just as in the case of 1D diffusion, most of the reduction is yielded in the earlier iterations, when the highest frequencies are damped most easily. Registrations were verified to be successful in the overwhelming majority of cases, ending with an oscillation around a consistent, very low mean squared difference value.
+  
+  % mean squared differences 2D
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][straight column]{\includegraphics[height=0.33\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/segmentation_mean_square_differences_2D}}
+    % \subfloat[][rotation]{\includegraphics[height=0.33\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/segmentation_mean_square_differences_2Dr}}
+    % \subfloat[][translation]{\includegraphics[height=0.33\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/segmentation_mean_square_differences_2Dt}}
+    % \subfloat[][rotation and translation]{\includegraphics[height=0.33\textheight,type=pdf,ext=.pdf,read=.pdf]{Ch6/Figs/dummies/segmentation_mean_square_differences_2Drt}}
+    \caption{The initial (blue) and final (green) mean squared pixel intensities between adjacent pairs for each of the four geometrical regimes.}
+    \label{fig:mean_squared_differences_2D}
+  \end{figure}
+
+  Figure~\ref{fig:mean_squared_differences_2D} graphs the initial and final metric values between adjacent pairs for the four test regimes. Note that each blue (resp. green) line is equivalent to the starting values on the left (resp. right) face of the corresponding plot in Figure~\ref{fig:mean_squared_differences_3D}. Almost ubiquitously, the value is substantially lower after transformational diffusion, with the green lines appearing much smoother after the high frequency spectrum has been preferentially damped.
+  
+  There is one notable example of a registration that has failed to reach a good alignment, manifested in Figure~\ref{fig:mean_squared_differences_3D}~\textbf{(a)} as a large spike in the metric value of slice 152 at iteration 6. The deviation is also visible in Figures~\labelcref{fig:cross_section_0,fig:cross_section_1}~\textbf{(d)} at iteration 8, as a large displacement two thirds of the way up from the base. At each iteration of the algorithm, the slices have moved relative to each other, and hence are initialised outside of any preceding local minimum trap. In this way, all adjacent slices are given multiple chances to become aligned, conferring to this method a great deal of robustness not present in any previous technique in the literature. By iteration 20 in Figures~\labelcref{fig:cross_section_0,fig:cross_section_1}~\textbf{(d)}, the abberation is imperceptible, and we can see from Figure~\ref{fig:mean_squared_differences_3D}~\textbf{(a)} that the erroneous metric value has returned to a level comparable with its neighbours after just four iterations.
+  
+  % full contours
+  \begin{figure}[htbp]\texttt{}
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surface_0}}
+    % \subfloat[][1 iteration]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surface_1}}
+    % \subfloat[][3 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surface_3}}
+    % \subfloat[][8 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surface_8}}
+    % \subfloat[][20 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surface_20}}
+    \caption{Isosurfaces of the perturbed straight volume in red at several stages of smoothing, overlayed with the unperturbed volume in green.}
+    \label{fig:dummy_contour}
+  \end{figure}
+  
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacer_0}}
+    % \subfloat[][1 iteration]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacer_1}}
+    % \subfloat[][3 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacer_3}}
+    % \subfloat[][8 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacer_8}}
+    % \subfloat[][20 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacer_20}}
+    \caption{Isosurfaces of the rotating volume.}
+    \label{fig:dummy_contourr}
+  \end{figure}
+  
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacet_0}}
+    % \subfloat[][1 iteration]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacet_1}}
+    % \subfloat[][3 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacet_3}}
+    % \subfloat[][8 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacet_8}}
+    % \subfloat[][20 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacet_20}}
+    \caption{Isosurfaces of the translating volumes.}
+    \label{fig:dummy_contourt}
+  \end{figure}
+  
+  \begin{figure}[htbp]
+    \centering
+    % \subfloat[][0 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacert_0}}
+    % \subfloat[][1 iteration]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacert_1}}
+    % \subfloat[][3 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacert_3}}
+    % \subfloat[][8 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacert_8}}
+    % \subfloat[][20 iterations]{\includegraphics[width=0.3\pagewidth]{Ch6/Figs/dummies/contours/whole_surfacert_20}}
+    \caption{Isosurfaces of the translating and rotating volumes.}
+    \label{fig:dummy_contourrt}
+  \end{figure}
+  
+  The nature of the 3-D geometry of the volumes --- the rotation and translation signals, and the transformational noise --- is most clearly understood from the segmentation volume isosurfaces in Figures~\labelcref{fig:dummy_contour,fig:dummy_contourr,fig:dummy_contourt,fig:dummy_contourrt}. Each of the 5 levels of smoothing depicted by Figures~\labelcref{fig:cross_section_0,fig:cross_section_1,fig:cross_section_0r,fig:cross_section_1r,fig:cross_section_0t,fig:cross_section_1t,fig:cross_section_0rt,fig:cross_section_1rt} are overlayed in red with their equivalent unperturbed volumes in green. Again, the smoothing brings the noisy volume much more closely in line with the ground truth, with the largest effect on the higher frequencies of noise. The conservation of the underlying structure is most evident in Figure~\ref{fig:dummy_contourrt}~(e), where the red isosurface deviates almost imperceptibly from the green.
+  
+  Parameters used in the registration are listed in Table~\ref{tab:dummy_histo_to_histo}. It is worth noting that as long as the registration process is refined enough to arrive dependably near the global minimum, the adjustment algorithm itself is stable with much larger levels of noise than showcased here. For example, one approach might be to preprocess images and tune parameters to cope with large displacements for the first few smoothing iterations, and then tune for smaller displacements during the finer smoothing in the later iterations. Yet, this kind of approach requires heavy manual intervention, and is highly specific to the problem at hand.
+
 
 % section methods (end)
