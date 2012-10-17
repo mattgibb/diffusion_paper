@@ -59,7 +59,8 @@ for info in (absolute_info, relative_info):
     x = range(len(values))
     ax.plot(x, values)
     plt.xlabel('Smoothing Iteration', fontsize='xx-large')
-    plt.ylabel("Log Mean Euclidian Distance Error", fontsize='xx-large')
+    ylabel = "Log Mean Euclidean Distance Error" if info["log"] else "Mean Euclidean Distance Error"
+    plt.ylabel(ylabel, fontsize='xx-large')
     plt.tick_params(axis='both', which='major', labelsize=16)
     if info["log"]: ax.set_yscale('log')
     # plt.ylim([0,1800])
@@ -72,3 +73,9 @@ for info in (absolute_info, relative_info):
         print(mean(values, axis=0))        
         print("Relative geometric means:")
         print(gmean(values))
+    else:
+        print("Absolute arithmetic means:")
+        print(mean(values, axis=0))        
+        print("Absolute geometric means:")
+        print(gmean(values))
+        
