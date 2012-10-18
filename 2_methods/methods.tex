@@ -1,6 +1,22 @@
 %!TEX root = ../diffusion_paper.tex
 \section{Methods} % (fold)
 \label{sec:methods}
+  FROM MOTIVATION AND AIMS SECTION
+  We have achieved a reasonable large-scale alignment of the great majority of histological slices to form a consistent tissue volume. Yet we are left with several limitations of the block face technique from Chapter~\ref{cha:coregistration_of_high_resolution_rat_histology}. There is significant underlying noise in the reference images, from the changes in camera position, and the illumination angles and intensities. At 26.6 $\mu$m, the in-plane resolution of the reference images is 24 times coarser than that of the histology slices, precluding an alignment on the scale of cardiac microstructure. Small non-rigid deformations introduced during slicing and rehydration are particular to each slice, and could not be represented fully by the affine registration. Despite obtaining a result that was relatively close to the block face geometry, the overlap of pixel intensities between tissue and wax, and the interslice variability therein, led to a noisy, jagged result that was not always at the global minimum.
+    
+  % \begin{figure}[htbp]
+  %   \centering
+  %   \subfloat[][]{\includegraphics[width=0.9\pagewidth]{Ch6/Figs/banana_0_343}}
+  %   \subfloat[][]{\includegraphics[width=0.9\pagewidth]{Ch6/Figs/banana_1_301}}
+  %   \caption{Cross-sections of the full histological volume, registered using the banana method. As in Figure~\ref{fig:geometric_initialisation}, \textbf{(a)} is perpendicular to the x-axis, and \textbf{(b)} to the y-axis. Even when constrained by a rigid transform, in many areas the slice-to-slice registration is accurate enough that detailed tissue structure is clearly visible. Yet, just as the cylinder does not represent the banana, the resulting geometry of the volume is quite unrelated to ground truth. This is apparent when comparing \textbf{(a)} and \textbf{(b)} to Figure~\ref{fig:LoRes_cross_sections} \textbf{(c)} and \textbf{(d)}, respectively.}
+  %   \label{fig:banana}
+  % \end{figure}
+    
+  Adjacent histological images are, in the main, extremely similar in shape, have an extremely similar colour profile and are obtained at the same spatial resolution. These characteristics together make for highly accurate and reliable coregistration. Starting from the first slice in a dataset, previous approaches have registered each successive slice to its predecessor, thus constructing a coherent volume. Figure~\ref{fig:banana} exhibits the application of this method to the rat histology. However, there are several unacceptable characteristics of volumes generated with these techniques. Because each slice is positioned relative to the previous, the displacement due to any single erroneous registration is propagated to every subsequent slice. Furthermore, the volumes suffer from what is known as the `banana problem', stemming from the fact that if a curved banana were sliced evenly and perpendicularly to its length, a volume obtained with a slice-to-slice method would appear straight, having lost the original curvature of the banana. In the case of cardiac histology, volumes approach maximum pairwise symmetry, bearing, if any, a merely coincidental relation to the large-scale geometry of the heart. Finally in this case, only rigid registration may be used, as if the size or shape of slices were unconstrained, every slice would approximate the dimensions of the first, and the heart would approximate a meaty cylinder.
+  
+  Enter what will be referred to as `transformational diffusion smoothing': a novel technique incorporating the best features from reference-based and slice-to-slice registration methods, and eliminating the weaknesses of both. In this chapter, we will expound its mathematical basis, verify its efficacy over a suite of test geometries, and finally present the much improved histological volumes to which it gives rise.
+  
+
   \subsection{Transformational Diffusion Algorithm} % (fold)
   \label{sub:transformational_diffusion_algorithm}
     
@@ -42,19 +58,26 @@
     % Evolution of error from ground truth
     \begin{figure}[!t]
       \centering
-      % 3d graph with each iteration of smoothing for rt volume
-      % \subfloat[]{\includegraphics[width=0.3\pagewidth]{3_results/Figs/contours_1_20}}
-      % 2d graph of error before smoothing, after 20 smoothings, and after banana registration for straight volume
-      % 2d graph of error before smoothing, after 20 smoothings, and after banana registration for rt volume
-      \caption{Evolution.}
-      \label{fig:synthetic_contours}
+      % 3d graph of absolute error with each iteration of smoothing for rt volume
+      \subfloat[]{\includegraphics[width=3.4in]{2_methods/Figs/absolute_errors_3d}}\\
+      \subfloat[]{\includegraphics[width=3.4in]{2_methods/Figs/absolute_errors_2d}}\\
+      \subfloat[]{\includegraphics[width=3.4in]{2_methods/Figs/relative_errors_2d}}
+      % 2d graph of absolute error before smoothing, after 40 smoothings, and after banana registration for rt volume
+      % 2d graph of relative error before smoothing, after 40 smoothings, and after banana registration for rt volume
+      \caption{Evolution.
+      Absolute arithmetic means: [1392.696705 271.5550335 4203.940815]
+      Absolute geometric means: [1236.92632027 243.948590058 3739.84432808]
+      Relative arithmetic means: [1929.23881407 37.93561276 134.80517588]
+      Relative geometric means: [1707.04389469 34.5628264039 122.07642497]
+      }
+      \label{fig:synthetic_errors}
     \end{figure}
     
   % subsection simulating_diffusion_on_synthetic_geometries (end)
   
   This section introduces and details transformational diffusion smoothing in full, in a manner driven by the requirements of the problem at hand. A revision of the theoretical underpinnings of 1-dimensional brownian motion is followed by some simple simulation of diffusion on a discrete grid. In a similar vein, a mathematical exposition of transformational diffusion is followed by its application in several simulated geometries with added artificial affine noise.
   
-	\subsection{1D Brownian Diffusion} % (fold)
+	\subsection{1-Dimensional Brownian Diffusion} % (fold)
 	\label{sub:a_1d_random_walk_analogy}
     The central limit theorem states that the mean of a sufficiently large number of independent random variables will be approximately normally distributed, regardless of their individual distribution. Indeed, Einstein's theory of the Brownian motion of a diffusive particle is based on this precept. With this in mind, the simplest model of microscopic diffusion is one in which a particle may move in a random walk in one dimension along the integer number line $\mathbb{Z}$, in steps of either $+1$ or $-1$, with equal probability. Taking each step as an independent random variable $Z_1, Z_2,\ldots$, if the particle's position $S$ starts at $S_0 = 0$, we can express the position of the particle after $N$ steps as
     
@@ -89,8 +112,17 @@
     After a small discretised timestep $\Delta t$, and to first order approximation, a proportion $2\alpha \Delta t$ of the particles have taken one step, such that half of them have diffused to the left and half to the right:
   	
 	  \begin{gather}
-	    \Delta f(x, t + \Delta t) = \alpha \Delta t(f(x - \Delta x, t) - 2f(x, t) + f(x + \Delta x, t)). \\
-	    f(x_i, t_{n+1}) = f(x_i, t_n) + \alpha (f(x_{i-1}, t_n) - 2f(x_i, t_n) + f(x_{i+1}, t_n)), \label{eqn:diffusion_1d}.
+      \begin{split}
+  	    \Delta f(x, t + \Delta t) = \alpha \Delta t(& f(x - \Delta x, t) \\
+                                                    & - 2f(x, t) \\
+                                                    & + f(x + \Delta x, t)),
+      \end{split} \\
+      \begin{split}
+  	    f(x_i, t_{n+1}) = f(x_i, t_n) + \alpha (& f(x_{i-1}, t_n) \\
+                                                & - 2f(x_i, t_n) \\
+                                                & + f(x_{i+1}, t_n)).
+      \end{split}
+      \label{eqn:diffusion_1d}
 		\end{gather}
   	
 	  This diffusion will of course act to smooth and homogenise $f$, since regions of high concentration relative to their neighbours will be reduced, and those of low concentration augmented. It is also clear from (\ref{eq:registration:gaussian-approximation}) that multiple application of this smoothing operation approximates a Gaussian diffusion smoothing.
@@ -108,7 +140,7 @@
 		  \label{fig:1d_diffusion}
 	  \end{figure}
 	  
-	  This process can be simulated quite trivially. The result 
+	  This process can be simulated quite trivially. A numerical approximation of a sine wave is graphed in blue in each of Figures~\labelcref{fig:1d_diffusion_0_40,fig:1d_diffusion_0_49,fig:1d_diffusion_0_50,fig:1d_diffusion_0_51}, on 200 equispaced points from $0$ to $2\pi$. Random noise from a Gaussian distribution is added, with variance equal to the amplitude of the sine wave, and is plotted in green. The subfigures show the evolution of the noise after 0, 1, 3, 15, 99 and 299 timesteps.
   
 	  Our purpose is to smooth out the high frequency random noise from the green wave as quickly and as computationally cheaply as is possible, whilst maintaining the underlying low frequency signal. There is a tradeoff to be made when deciding upon a value for $\alpha$. The greater $\alpha$, the more particles move to the left and right at each iteration, and so the faster the noise is damped. But when $\alpha$ approaches 0.5, almost all of the particles from each bin are moving out at each iteration, and unstable oscillations start to appear. In Figure~\ref{fig:1d_diffusion}, $\alpha$ is set to 0.4, a great compromise between speed of smoothing and stability. If $\alpha$ is set closer to 0.5, the highest frequency is actually damped much more slowly, as oscillatory `swapping' effects start to appear. If $\alpha$ is set to 0.51, the system becomes unstable. This is not entirely surprising, since it is unphysical for more than all of the particles to diffuse out of a particular bin at each timestep.
 	% subsection simulating_1d_diffusion (end)
@@ -137,11 +169,16 @@
     \label{ssub:formulating_the_diffusion_transforms}
       In the case of 1-dimensional diffusion, we can reformulate the right hand side of (\ref{eqn:diffusion_1d}) into two separate terms thusly:
      
-	  \begin{align}
-	    f(x_i, t_{n+1}) &= f(x_i, t_n) + \alpha ((f(x_{i+1}, t_n) - f(x_i, t_n)) - (f(x_{i-1}, t_n) - f(x_i, t_n)) \\
-			\Delta f_i^{n,n+1} &= \alpha (\Delta f_{i,i+1}^n - \Delta f_{i-1,i}^n) \\
-			                   &= \alpha \Delta f_{i,i-1}^n + \alpha \Delta f_{i,i+1}^n, \label{eqn:1d_diffusion_operator}
-		\end{align}
+	  \begin{alignat}{2}
+  	  f(x_i, t_{n+1}) &=\begin{aligned}
+        % 1 &+ 2 \\
+        % 3 &+ 4
+        f(x_i, t_n) + \alpha (&(f(x_{i+1}, t_n) - f(x_i, t_n)) \\
+                                    - &(f(x_{i-1}, t_n) - f(x_i, t_n))
+  	  \end{aligned} \\
+      \Delta f_i^{n,n+1} &= \alpha (\Delta f_{i,i+1}^n - \Delta f_{i-1,i}^n) \\
+                         &= \alpha \Delta f_{i,i-1}^n + \alpha \Delta f_{i,i+1}^n, \label{eqn:1d_diffusion_operator}
+		\end{alignat}
 		
     where $\Delta f_i^{m,n}$ is the difference in $f$ at position $i$ between timestep $m$ and timestep $n$, and $\Delta f_{i,j}^m$ is the difference in $f$ between position $i$ and position $j$ at timestep $m$. From (\ref{eqn:1d_diffusion_operator}), we can see that at each timestep, the concentration at each bin moves towards its left and right neighbour by a proportion $\alpha$ of its difference from each, respectively.
 		
@@ -230,16 +267,32 @@
         Since scalar multiplications commute with matrix transformations, if the operator $\cdot$ is constructed to scale geometrically, the situation is very similar to that of rotation matrices and \labelcref{eqn:null,eqn:identity,eqn:distributivity,eqn:commutativity,eqn:associativity} still apply:
         
         \begin{gather}
-            \alpha \cdot \mathbf{T} = e^{\alpha\ln\sigma}R(\alpha\theta) \\
-            (\alpha \cdot \mathbf{T})(\beta \cdot \mathbf{T}) = e^{(\alpha + \beta)\ln\sigma}R((\alpha + \beta)\theta) = (\alpha + \beta) \cdot \mathbf{T} \\
-			\mathbf{S} \oplus \mathbf{T} = \sigma_\mathbf{S}\mathbf{R}(\theta_\mathbf{S})\sigma_\mathbf{T}\mathbf{R}(\theta_\mathbf{T}) = \sigma_\mathbf{S}\sigma_\mathbf{T}\mathbf{R}(\theta_\mathbf{S} + \theta_\mathbf{T}) = \mathbf{T} \oplus \mathbf{S} \\
-			(\mathbf{S} \oplus \mathbf{T}) \oplus \mathbf{U} = \sigma_\mathbf{S}\sigma_\mathbf{T}\sigma_\mathbf{U}\mathbf{R}(\theta_\mathbf{S} + \theta_\mathbf{T} + \theta_\mathbf{U}) = \mathbf{S} \oplus (\mathbf{T} \oplus \mathbf{U}).
+          \alpha \cdot \mathbf{T} = e^{\alpha\ln\sigma}R(\alpha\theta) \\
+          \begin{split}
+            (\alpha \cdot \mathbf{T})(\beta \cdot \mathbf{T}) &= e^{(\alpha + \beta)\ln\sigma}R((\alpha + \beta)\theta) \\
+                                                              &= (\alpha + \beta) \cdot \mathbf{T}
+          \end{split} \\
+          \begin{split}
+      			\mathbf{S} \oplus \mathbf{T} &= \sigma_\mathbf{S}\mathbf{R}(\theta_\mathbf{S})\sigma_\mathbf{T}\mathbf{R}(\theta_\mathbf{T}) \\
+                                         &= \sigma_\mathbf{S}\sigma_\mathbf{T}\mathbf{R}(\theta_\mathbf{S} + \theta_\mathbf{T}) \\
+                                         &= \mathbf{T} \oplus \mathbf{S}
+          \end{split} \\
+          \begin{split}
+      			(\mathbf{S} \oplus \mathbf{T}) \oplus \mathbf{U} &= \sigma_\mathbf{S}\sigma_\mathbf{T}\sigma_\mathbf{U}\mathbf{R}(\theta_\mathbf{S} + \theta_\mathbf{T} + \theta_\mathbf{U}) \\
+                                                             &= \mathbf{S} \oplus (\mathbf{T} \oplus \mathbf{U}).
+          \end{split}
         \end{gather}
 		
 		In the more general case of diagonalisable affine matrix transformations, in the absence of translations, and when $\mathbf{S}$ and $\mathbf{T}$ can be diagonalised by the same matrix $\mathbf{V}$ i.e. $\mathbf{S} = \mathbf{VD_SV}^{-1}$ and $\mathbf{T} = \mathbf{VD_TV}^{-1}$, commutativity still holds for serial application:
         
         \begin{equation}
-			\mathbf{S} \oplus \mathbf{T} = \mathbf{ST} = \mathbf{VD_SV}^{-1}\mathbf{VD_TV}^{-1} = \mathbf{VD_SD_TV}^{-1} =\mathbf{VD_TD_SV}^{-1} = \mathbf{T} \oplus \mathbf{S},
+          \begin{split}
+      			\mathbf{S} \oplus \mathbf{T} &= \mathbf{ST} \\
+                                         &= \mathbf{VD_SV}^{-1}\mathbf{VD_TV}^{-1} \\
+                                         &= \mathbf{VD_SD_TV}^{-1} \\
+                                         &= \mathbf{VD_TD_SV}^{-1} \\
+                                         &= \mathbf{T} \oplus \mathbf{S},
+          \end{split}
         \end{equation}
         
         with associativity of course holding for the serial application of affine transformations in general. However, when $\mathbf{M_S}$ and $\mathbf{M_T}$ no longer commute, serial application of transforms is no longer sufficient. There is also no obvious form of operator $\cdot$ which satisfies \labelcref{eqn:null,eqn:identity,eqn:distributivity}. We must take recourse to a more general formulation of operators $\cdot$ and $\oplus$.
@@ -275,9 +328,11 @@
           \alpha \cdot \mathbf{M} = e^{\alpha\ln\mathbf{M}} \\
           0 \cdot \mathbf{M} = e^0 = \mathbf{I} \\
           1 \cdot \mathbf{M} = e^{\ln\mathbf{M}} = \mathbf{M} \\
-          (\alpha \cdot \mathbf{M})(\beta \cdot \mathbf{M}) = e^{\alpha\ln\mathbf{M}}e^{\beta\ln\mathbf{M}}
-                                                            = e^{(\alpha + \beta)\ln\mathbf{M}}
-                                                            = (\alpha + \beta) \cdot \mathbf{M}.
+          \begin{split}
+            (\alpha \cdot \mathbf{M})(\beta \cdot \mathbf{M}) &= e^{\alpha\ln\mathbf{M}}e^{\beta\ln\mathbf{M}} \\
+                                                              &= e^{(\alpha + \beta)\ln\mathbf{M}} \\
+                                                              &= (\alpha + \beta) \cdot \mathbf{M}.
+          \end{split}
         \end{gather}
         
         We can define operator $\oplus$ as a simple addition of the matrix logarithms in log-Euclidian space, followed by a mapping back to transform space with the exponential operator:
@@ -290,13 +345,20 @@
         
         \begin{gather}
           \mathbf{M_S} \oplus \mathbf{M_T} = e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}} = \mathbf{M_T} \oplus \mathbf{M_S} \\
-          (\mathbf{M_S}\oplus\mathbf{M_T})\oplus\mathbf{M_U} = e^{\ln\mathbf{M_S} + \ln\mathbf{M_T} + \ln\mathbf{M_U}} = \mathbf{M_S}\oplus(\mathbf{M_T}\oplus\mathbf{M_U})
+          \begin{split}
+            (\mathbf{M_S}\oplus\mathbf{M_T})\oplus\mathbf{M_U} &= e^{\ln\mathbf{M_S} + \ln\mathbf{M_T} + \ln\mathbf{M_U}} \\
+                                                               &= \mathbf{M_S}\oplus(\mathbf{M_T}\oplus\mathbf{M_U})
+          \end{split}
         \end{gather}
         
         It is pleasing to note that this new formula coincides with the special cases of rotation, similarity and diagonalisability discussed previously, since whenever the two matrices commute,
         
         \begin{equation}
-          \mathbf{M_SM_T} = e^{\ln\mathbf{M_S}}e^{\ln\mathbf{M_T}} = e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}} = \mathbf{M_S} \oplus \mathbf{M_T}.
+          \begin{split}
+            \mathbf{M_SM_T} &= e^{\ln\mathbf{M_S}}e^{\ln\mathbf{M_T}} \\
+                            &= e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}} \\
+                            &= \mathbf{M_S} \oplus \mathbf{M_T}.
+          \end{split}
         \end{equation}
         
         This `log-Euclidian' approach is expounded with Titanic mathematical rigour in \cite{Arsigny2005}. However, being motivated by the interpolation of MRI data, the treatise is limited to tensors; that is, symmetric matrices with no translation.
@@ -310,7 +372,10 @@
         If commutivity is forced, by averaging the offset contributions from both permutations of the operands i.e.
         
         \begin{equation}
-          (\mathbf{S} \oplus \mathbf{T})\mathbf{p} = (\mathbf{T} \oplus \mathbf{S})\mathbf{p} = (\mathbf{M_S} \oplus \mathbf{M_T})\mathbf{p} + \frac{1}{2}\left(\left( \mathbf{M_S} + \mathbf{I} \right) \mathbf{o_T} + \mathbf{o_S}\right),
+          \begin{split}
+            (\mathbf{S} \oplus \mathbf{T})\mathbf{p} &= (\mathbf{T} \oplus \mathbf{S})\mathbf{p} \\
+                                                     &= (\mathbf{M_S} \oplus \mathbf{M_T})\mathbf{p} + \frac{1}{2}\left(\left( \mathbf{M_S} + \mathbf{I} \right) \mathbf{o_T} + \mathbf{o_S}\right),
+          \end{split}
         \end{equation}
         
         then associativity breaks down. The same underlying structure precludes a linear interpolation in operator $\cdot$ akin to \labelcref{eqn:translation_cdot} in the presence of a non-identical matrix:
@@ -343,12 +408,14 @@
         
         \begin{gather}
           \delta \cdot \mathbf{U} = (\delta \cdot \mathbf{S}) \oplus (\delta \cdot \mathbf{T}) \approx (\delta \cdot \mathbf{S}) (\delta \cdot \mathbf{T}) \\
-          \begin{split}
-            e^{\delta(\ln \mathbf{M_S} + \ln \mathbf{M_T})}\mathbf{p} + (\mathbf{I} - e^{\delta(\ln \mathbf{M_S} + \ln \mathbf{M_T})})\mathbf{c_U} =
+          \begin{aligned}
+            &e^{\delta(\ln \mathbf{M_S} + \ln \mathbf{M_T})}\mathbf{p} \\
+            &+ (\mathbf{I} - e^{\delta(\ln \mathbf{M_S} + \ln \mathbf{M_T})})\mathbf{c_U}
+          \end{aligned} = \begin{aligned}
               &e^{\delta \ln \mathbf{M_S}}e^{\delta \ln \mathbf{M_T}}\mathbf{p} \\
               &+ e^{\delta \ln \mathbf{M_S}}(\mathbf{I} - e^{\delta \ln \mathbf{T}})\mathbf{c_T} \\
               &+ (\mathbf{I} - e^{\delta \ln \mathbf{M_S}})\mathbf{c_S}. \label{eqn:infinitesimal_oplus}
-          \end{split}
+          \end{aligned}
         \end{gather}
         
         We can see from the series in (\ref{eqn:matrix_exponential}) that
@@ -374,12 +441,15 @@
         
         \begin{gather}
           \begin{split}
-            (\mathbf{S} \oplus \mathbf{T}) \oplus \mathbf{U} &= \exp(\ln(e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}}) + \ln\mathbf{M_U})(\mathbf{p} - \mathbf{c}) + \mathbf{c} \\
+            (\mathbf{S} \oplus \mathbf{T}) \oplus \mathbf{U} &= \exp(\ln(e^{\ln\mathbf{M_S} + \ln\mathbf{M_T}}) + \ln\mathbf{M_U})(\mathbf{p} - \mathbf{c}) \\
+                                                             &\quad + \mathbf{c} \\
                                                              &= e^{\ln\mathbf{M_S} + \ln\mathbf{M_T} + \ln\mathbf{M_U}}(\mathbf{p} - \mathbf{c}) + \mathbf{c},
           \end{split} \\
           \begin{split}
-            \mathbf{c} &= (\ln\mathbf{M_{S \oplus T}} + \ln\mathbf{M_U})^{-1}((\ln\mathbf{M_{S \oplus T}})\mathbf{c_{S \oplus T}} + (\ln\mathbf{M_U})\mathbf{c_U}) \\
-                       &= (\ln\mathbf{M_S} + \ln\mathbf{M_T} + \ln\mathbf{M_U})^{-1}((\ln\mathbf{M_U})\mathbf{c_S} + (\ln\mathbf{M_U})\mathbf{c_T} + (\ln\mathbf{M_U})\mathbf{c_U}).
+            \mathbf{c} =& (\ln\mathbf{M_{S \oplus T}} + \ln\mathbf{M_U})^{-1} \\
+                       &\quad ((\ln\mathbf{M_{S \oplus T}})\mathbf{c_{S \oplus T}} + (\ln\mathbf{M_U})\mathbf{c_U}) \\
+                       =& (\ln\mathbf{M_S} + \ln\mathbf{M_T} + \ln\mathbf{M_U})^{-1} \\
+                       &\quad ((\ln\mathbf{M_S})\mathbf{c_S} + (\ln\mathbf{M_T})\mathbf{c_T} + (\ln\mathbf{M_U})\mathbf{c_U}).
           \end{split}
         \end{gather}
         
