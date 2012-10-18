@@ -1,6 +1,6 @@
 %!TEX root = ../diffusion_paper.tex
-\section{Motivation and Aims} % (fold)
-\label{sec:motivation_and_aims}
+\section{Introduction} % (fold)
+\label{sec:introduction}
   \IEEEPARstart{W}{e} have achieved a reasonable large-scale alignment of the great majority of histological slices to form a consistent tissue volume. Yet we are left with several limitations of the block face technique from Chapter~\ref{cha:coregistration_of_high_resolution_rat_histology}. There is significant underlying noise in the reference images, from the changes in camera position, and the illumination angles and intensities. At 26.6 $\mu$m, the in-plane resolution of the reference images is 24 times coarser than that of the histology slices, precluding an alignment on the scale of cardiac microstructure. Small non-rigid deformations introduced during slicing and rehydration are particular to each slice, and could not be represented fully by the affine registration. Despite obtaining a result that was relatively close to the block face geometry, the overlap of pixel intensities between tissue and wax, and the interslice variability therein, led to a noisy, jagged result that was not always at the global minimum.
     
   % \begin{figure}[htbp]
@@ -45,13 +45,13 @@
   
   \begin{figure}[!t]
     \centering
-    \subfloat[]{\includegraphics[width=1.7in]{1_motivation_and_aims/Figs/HiRes_downsamples_8_0582}}
-    \subfloat[]{\includegraphics[width=1.7in]{1_motivation_and_aims/Figs/LoRes_rgb_downsamples_1_0582}}\\
-    \subfloat[]{\includegraphics[width=1.7in]{1_motivation_and_aims/Figs/HiRes_downsamples_1_0582_zoom}}
-    \subfloat[]{\includegraphics[width=1.7in]{1_motivation_and_aims/Figs/LoRes_rgb_downsamples_1_0582_zoom}}
+    \subfloat[]{\includegraphics[width=1.7in]{1_introduction/Figs/HiRes_downsamples_8_0582}}
+    \subfloat[]{\includegraphics[width=1.7in]{1_introduction/Figs/LoRes_rgb_downsamples_1_0582}}\\
+    \subfloat[]{\includegraphics[width=1.7in]{1_introduction/Figs/HiRes_downsamples_1_0582_zoom}}
+    \subfloat[]{\includegraphics[width=1.7in]{1_introduction/Figs/LoRes_rgb_downsamples_1_0582_zoom}}
     \caption{Figure on starting point, showing dataset images, whole and with zoom}
     \label{fig:synthetic_cross_sections}
   \end{figure}
     
   
-% section motivation_and_aims (end)
+% section introduction (end)
