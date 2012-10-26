@@ -39,27 +39,27 @@ for info in (absolute_info, relative_info):
     banana_errors = genfromtxt(join(banana_errors_path, "1"))
     
     # plot
-    fig3d = plt.figure(frameon=False)
-    ax = fig3d.add_axes([0.0,0.0,1.0,1.0], projection='3d')
-    for i, slice in enumerate(errors):
-        x = range(len(slice))
-        y = [i] * len(slice)
-        ax.plot(x, y, slice)
-    plt.xlabel('Smoothing Iteration', fontsize='xx-large')
-    plt.ylabel('Slice Number', fontsize='xx-large')
-    ax.set_zlabel("Mean Euclidian Distance Error", fontsize='xx-large')
-    plt.show()
+    # fig3d = plt.figure(frameon=False)
+    # ax = fig3d.add_axes([0.0,0.0,1.0,1.0], projection='3d')
+    # for i, slice in enumerate(errors):
+    #     x = range(len(slice))
+    #     y = [i] * len(slice)
+    #     ax.plot(x, y, slice)
+    # plt.xlabel('Smoothing Iteration', fontsize='xx-large')
+    # plt.ylabel('Slice Number', fontsize='xx-large')
+    # ax.set_zlabel("Mean Euclidian Distance Error", fontsize='xx-large')
+    # plt.show()
     # fig3d.savefig(join(FIGURE_PATH, info["figure_name"] + "_3d.pdf"))
 
     # 2d plots
     # error before smoothing, after 40 smoothings, and after banana registration
-    fig2d = plt.figure(figsize=(10, 6))
-    ax = fig2d.add_axes([0.12,0.1,0.85,0.85])
+    fig2d = plt.figure(figsize=(7, 4.2))
+    ax = fig2d.add_axes([0.13,0.13,0.83,0.83])
     values = hstack((errors[:,(0,40)],banana_errors[None].T))
     x = range(len(values))
     ax.plot(x, values)
-    plt.xlabel('Smoothing Iteration', fontsize='xx-large')
-    ylabel = "Log Mean Euclidean Distance Error" if info["log"] else "Mean Euclidean Distance Error"
+    plt.xlabel('Slice Number', fontsize='xx-large')
+    ylabel = "Log Mean Euclid. Dist. Err." if info["log"] else "Mean Euclid. Dist. Err."
     plt.ylabel(ylabel, fontsize='xx-large')
     plt.tick_params(axis='both', which='major', labelsize=16)
     if info["log"]: ax.set_yscale('log')

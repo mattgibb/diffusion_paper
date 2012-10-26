@@ -9,15 +9,15 @@
     \subfloat[]{\includegraphics[height=1.2in]{3_results/Figs/affine_1_287}}
     \subfloat[]{\includegraphics[height=1.2in]{3_results/Figs/banana_1_301}}
     \caption{Equivalent cross-sections of (a) the block face volume, (b) the histology slices before registration, aligned to their common geometrical centre, (c) the block face-registered histology slices and (d) the sequentially registered slices with no reference volume.}
-    \label{fig:}
+    \label{fig:block_face_registration}
   \end{figure}
   
-  Cross-sections of We achieve a reasonable large-scale alignment of the great majority of histological slices to form a consistent tissue volume. Yet we are left with several limitations of the block face technique. Striations are visible in (a) due to discrete changes in the positioning and intensity of illumination between block face image acquisitions. These changes will propagate to the final block face registration result. At 26.6 $\mu$m, the in-plane resolution of the reference images is 24 times coarser than that of the histology slices, precluding an alignment on the scale of cardiac microstructure. Small non-rigid deformations introduced during slicing and rehydration are particular to each slice, and could not be represented fully by the affine registration. Despite obtaining a result that was relatively close to the block face geometry, the overlap of pixel intensities between tissue and wax, and the interslice variability therein, led to a noisy, jagged result that was not always at the global minimum.
+  Cross-sections of block face, unregistered, block face-registered and serially registered volumes are presented in Figure~\ref{fig:block_face_registration}. We achieve a reasonable large-scale alignment of the great majority of histological slices to form a consistent tissue volume, as is clear from a comparison of Figure~\ref{fig:block_face_registration} (a) and (c). Yet we are left with several limitations of the block face technique. Striations are visible in (a) due to discrete changes in the positioning and intensity of illumination between block face image acquisitions. These changes propagate to the final block face registration result. At 26.6 $\mu$m, the in-plane resolution of the reference images is 24 times coarser than that of the histology slices (evident in Figure~\ref{fig:raw_images}), precluding an alignment on the scale of cardiac microstructure. Small non-rigid deformations introduced during slicing and rehydration are particular to each slice, and could not be represented fully by the affine registration. Despite obtaining a result that was relatively close to the block face geometry, the overlap of pixel intensities between tissue and wax, and the interslice variability therein, leads to a noisy, jagged result that is not always at the global minimum.
   
-  MOVE TO RESULTS Even when constrained by a rigid transform, in many areas the slice-to-slice registration in (d) is accurate enough that detailed tissue structure is clearly visible. Yet, just as the cylinder does not represent the banana, the resulting geometry of the volume is quite unrelated to the ground truth of the block face volume. MOVE TO RESULTS
+  Even when constrained by a rigid transform, in many areas the slice-to-slice registration in Figure~\ref{fig:block_face_registration}~(d) is accurate enough that detailed tissue structure is clearly visible. Yet, just as the prism-like synthetic volume does not represent the oscillatory volume in Figure~\ref{fig:synthetic_contours}, the resulting geometry of the volume is quite unrelated to the ground truth of the block face volume.
   
   FROM THESIS
-  
+    
   \subsection{Global Diffusion} % (fold)
   \label{sub:global_diffusion}
     % x slices
