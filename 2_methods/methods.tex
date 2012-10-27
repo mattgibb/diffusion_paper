@@ -287,46 +287,11 @@
     % subsubsection formulating_the_transform_operators (end)
   % subsection transformational_diffusion_smoothing (end)
 	
-  \subsection{Diffusion on Synthetic Geometries} % (fold)
-    \label{sub:diffusion_on_synthetic_geometries}
+  \subsection{TDS on Synthetic Geometries} % (fold)
+    \label{sub:tds_on_synthetic_geometries}
     In order to test the efficacy of the algorithm in a quantitative way, it was necessary to devise several test geometries. A stack of 200 identical histology slices is presented here, incorporating two low-frequency sinusoidal signals: a translational signal of amplitude approximately half the dimension of the heart section, and a rotational signal spanning 90$^{\circ}$, out of phase with the translational signal by by 90$^{\circ}$. The transform parameters of each slice are then purturbed by random Gaussian noise, with translational $\sigma$ equal to half the amplitude of the translational signal, and the affine matrix element $\sigma$ equal to 0.1.
   
-  \begin{figure}[!t]
-    \centering
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_0}\label{fig:synthetic_cross_section_0}}
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_1}}
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_7}}\\
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_40}}
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_perfect}}
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/cross_section_banana}}
-    \caption{Cross-sections of the synthetic volume (a) before diffusion, (b) after 1 iteration, (c) after 7 iterations and (d) after 40 iterations, with (e) a cross-section of the unperturbed volume as a reference. (f) is the cross-section of a serially registered volume.}
-    \label{fig:synthetic_cross_sections}
-  \end{figure}
-    
-  The central cross-sections perpendicular to the x-axes are exhibited in Figure~\ref{fig:synthetic_cross_sections}. Cross-section (a) is of the original unsmoothed noisy volume, and (e) of the volume before noise was added. Three images are sandwiched by these two extremes, of sections smoothed 1, 7 and 40 times. The smoothing performs extremely well on two fronts. By iteration 40, a smooth, continuous section with the appearance of an original histology slice has been recovered from an unrecognisably noisy volume. Secondly and crucially, the underlying geometry of the tissue has been preserved, and the sections appear very similar to the ground truth sections before the noise had been added. Contrastingly, the banana effect is clear from (f), which has lost virtually all of the underlying sinusoidal signal.
-  
-  \begin{figure}[!t]
-    \centering
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_0}}
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_1}}
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_7}}\\
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_40}}
-    \subfloat[]{\includegraphics[width=1.1in]{2_methods/Figs/whole_surface_banana}}
-    \caption{Contours of the perturbed synthetic volumes in red before diffusion (a), and after 1 (b), 7 (c) and 40 (d) iterations, overlayed with the unperturbed volume in green. A contour of the serially registered volume in green is shown in (e).}
-    \label{fig:synthetic_contours}
-  \end{figure}
-  
-  The nature of the 3-D geometry of the volumes --- the rotation and translation signals, and the transformational noise --- is most clearly understood from the segmentation volume isosurfaces in Figure~\ref{fig:synthetic_contours}. Each of the 4 levels of smoothing depicted by Figure~\ref{fig:synthetic_cross_sections} are overlayed in red with the unperturbed volume in green. Again, the smoothing brings the noisy volume much more closely in line with the ground truth, with the largest effect on the higher frequencies of noise. The conservation of the underlying structure is most evident in Figure~\ref{fig:synthetic_contours}~(d), where the red isosurface deviates almost imperceptibly from the green. The surface of (e) is greatly more discontinous than the red surface of (d), each slice pair having only been coregistered once.
-
-  % Evolution of error from ground truth
-  \begin{figure}[!t]
-    \subfloat[]{\includegraphics[width=1.7in]{2_methods/Figs/absolute_errors_2d}\label{fig:absolute_errors_2d}}
-    \subfloat[]{\includegraphics[width=1.7in]{2_methods/Figs/relative_errors_2d}\label{fig:relative_errors_2d}}
-    \caption{Slicewise absolute (a) and relative (b) mean pixel Euclidean distance errors of the initial (blue), final (green) and sequentially registered (red) synthetic volumes. The absolute volumewise means are 1392.696705, 271.5550335 and 4203.940815 and the relative means are 1929.23881407, 37.93561276 and 134.80517588, for the initial, final and sequential volumes respectively.}
-    \label{fig:synthetic_errors}
-  \end{figure}
-  
-  Figure~\ref{fig:synthetic_errors}~(a) graphs the mean Euclidean distance of the pixels within a segmentation of the slice from their unperturbed ground truth position, before and after smoothing, and after serial registration. Almost ubiquitously, the metric is greatly reduced after transformational diffusion, evidence that each slice is much more closely aligned to its true position. The overall sinusoidal nature of the serial registration is of course due to the loss of the ground truth morphology. The error after diffusion is prominently the smoothest of the three lines, reflecting the continuity of the volume and the preferential damping of the high frequency spectrum.
-
-  Mean relative Euclidean errors in Figure~\ref{fig:synthetic_errors}~(b) --- distances of pixels in slice $n+1$ from their ground truth positions, both measured from the respective reference frames of slice $n$ --- are cleanly separated on a log scale. The same spectral patterns are observed. Volumewise absolute error is reduced by a factor of 5.1 and relative error by 50 after transformational diffusion smoothing.
+  \subsection{TDS on Block Face-Registered Histology} % (fold)
+    \label{sub:diffusion_on_block_face_registered_histology}
+    20 iterations of TDS were applied to an entire block face-registered rat heart, and a further 20 iterations to a region around a sub-epicardial vessel .The final transforms from the global smoothing were used to initialise the regional smoothing, with the centre of transformation moved to the geometric centre of the region.
 % section methods (end)
