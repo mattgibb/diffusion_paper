@@ -110,11 +110,6 @@ A mean squares difference metric proved most robust over normalised correlation 
 		\end{align}
 		The offsets are therefore trivially analogous to (\ref{eqn:simplified_expressions}).
 				
-    
-    
-    START DELETED BIT
-    
-    
         In the case of rigid transforms, $\mathbf{M}$ is a rotation matrix $\mathbf{R}(\theta)$. In 2 dimensions, rotation matrices commute, and the result of their multiplication is simply a rotation matrix with angle equal to the sum of the operands' angles; in the special case where there are no offsets, then serial application of the transforms is a candidate for operator $\oplus$ according to (\ref{eqn:commutativity}):
        \begin{equation}
            \mathbf{S} \oplus \mathbf{T} = \mathbf{R}(\theta_\mathbf{S})\mathbf{R}(\theta_\mathbf{T}) = \mathbf{R}(\theta_\mathbf{S} + \theta_\mathbf{T}) = \mathbf{T} \oplus \mathbf{S}
@@ -152,25 +147,10 @@ A mean squares difference metric proved most robust over normalised correlation 
             \end{equation}
             with associativity of course holding for the serial application of affine transformations in general. However, when $\mathbf{M_S}$ and $\mathbf{M_T}$ no longer commute, serial application of transforms is no longer sufficient. There is also no obvious form of operator $\cdot$ which satisfies \labelcref{eqn:null,eqn:identity,eqn:distributivity}. We must take recourse to a more general formulation of operators $\cdot$ and $\oplus$.
     
-    
-    
-    
-    END DELETED BIT
-    
-    START NEW BIT
-    
-		Considering now the case of affine matrix transformations in the absence of translations, in the general case when $\mathbf{M_S}$ and $\mathbf{M_T}$ no longer commute, serial application of transforms is no longer sufficient. There is also no obvious form of operator $\cdot$ which satisfies \labelcref{eqn:null,eqn:identity,eqn:distributivity}. We must take recourse to a more general formulation of operators $\cdot$ and $\oplus$, for which we borrow the concepts of matrix exponential and Lie algebra \cite{Arsigny2005, Arsigny2005a}
-
-    END NEW BIT
-        
-    DELETED It is here that we must introduce the concept of the matrix exponential:
-
-        NEW The matrix exponential is defined as:
+    It is here that we must introduce the concept of the matrix exponential:
         \begin{equation}
           e^{\mathbf{M}} = \sum_{k=0}^{\infty}\frac{1}{k!}\mathbf{M}^k. \label{eqn:matrix_exponential}
         \end{equation}
-        START DELETED BIT
-
                 Conversely, a logarithm $\mathbf{L}$ of a matrix $\mathbf{M}$ is another matrix such that $e^\mathbf{L} = \mathbf{M}$. For any invertible matrix $\mathbf{Y}$, it is clear that
                 \begin{gather}
                     (\mathbf{YM}\mathbf{Y}^{-1})^n = \mathbf{Y}\mathbf{M}^n\mathbf{Y}^{-1}, n \in \mathbb{N}.
@@ -185,10 +165,6 @@ A mean squares difference metric proved most robust over normalised correlation 
                 If $\mathbf{M}$ is diagonalisable, and we choose a $\mathbf{Y}$ that diagonalises $\mathbf{M}$, such that $\mathbf{D} = \mathbf{YMY}^{-1}$, (\ref{eqn:diagonal_exp}) becomes trivially analogous to the Taylor expansion for a scalar exponential, and we can then simply compute the exponential of each diagonal element of $\mathbf{D}$. It follows that the logarithm of a positive definite diagonal matrix can be computed by taking the logarithm of each of its elements.
                 
                 It turns out that when a matrix $\mathbf{M}$ has a logarithm $\mathbf{L}$, $\mathbf{M}$ is in a Lie group --- a group on a smooth manifold. $\mathbf{L}$ is the corresponding element of the associated Lie algebra. $\mathbf{L}$ is an `infinitessimal generator', and its value determines the tangent space at the identity $\mathbf{I}$. Informally, this means that there exists a matrix $\mathbf{I} + \epsilon \mathbf{L}$ that is extremely close to the identity, such that when applied repeatedly an extremely large number of times i.e. $(\mathbf{I} + \epsilon \mathbf{L})^n$, the result eventually becomes $\mathbf{M}$.
-        
-        END DELETED BIT
-
-        NEW Conversely, a logarithm $\mathbf{L}$ of a matrix $\mathbf{M}$ is another matrix such that $e^\mathbf{L} = \mathbf{M}$. When a matrix $\mathbf{M}$ has a logarithm $\mathbf{L}$, $\mathbf{M}$ is in a Lie group --- a group on a smooth manifold. $\mathbf{L}$ is the corresponding element of the associated Lie algebra. $\mathbf{L}$ is an `infinitessimal generator', and its value determines the tangent space at the identity $\mathbf{I}$. Informally, this means that there exists a matrix $\mathbf{I} + \epsilon \mathbf{L}$ that is extremely close to the identity, such that when applied repeatedly an extremely large number of times i.e. $(\mathbf{I} + \epsilon \mathbf{L})^n$, the result eventually becomes $\mathbf{M}$.
         
         If we define operator $\cdot$ in terms of the exponential and the logarithm of $\mathbf{M}$, \labelcref{eqn:null,eqn:identity,eqn:distributivity} are all satisfied:
         \begin{gather}
@@ -213,8 +189,6 @@ A mean squares difference metric proved most robust over normalised correlation 
                                                                &= \mathbf{M_S}\oplus(\mathbf{M_T}\oplus\mathbf{M_U}).
           \end{split}
         \end{gather}
-BEGIN DELETED BIT
-
         It is pleasing to note that this new formula coincides with the special cases of rotation, similarity and diagonalisability discussed previously, since whenever the two matrices commute,
         \begin{equation}
             \begin{split}
@@ -223,16 +197,12 @@ BEGIN DELETED BIT
                                 &= \mathbf{M_S} \oplus \mathbf{M_T}.
             \end{split}
         \end{equation}
-END DELETED BIT
-
         This `log-Euclidian' approach is expounded with great mathematical rigour in \cite{Arsigny2005}. However, being motivated by the interpolation of MRI data, the treatise is limited to tensors; that is, symmetric matrices with no translation.
         
 		    So far, the discussion has been limited to cases with zero offset. When offsets are introduced, even when their respective matrices commute, the commutativity of transforms in (\ref{eqn:commutativity}) no longer holds when serial action akin to (\ref{eqn:translation_oplus}) is introduced na\"ively:
         \begin{equation}
           (\mathbf{S} \oplus \mathbf{T})\mathbf{p} = (\mathbf{M_S} \oplus \mathbf{M_T})\mathbf{p} + \mathbf{M_So_T} + \mathbf{o_S} \ne (\mathbf{T} \oplus \mathbf{S})\mathbf{p}.
         \end{equation}
-        BEGIN DELETED BIT
-
         If commutivity is forced, by averaging the offset contributions from both permutations of the operands i.e.
         \begin{equation}
             \begin{split}
@@ -246,17 +216,6 @@ END DELETED BIT
             (\alpha \cdot \mathbf{T})(\beta \cdot \mathbf{T})\mathbf{p} = \mathbf{M}_{\alpha+\beta}\mathbf{p} + \beta\mathbf{M}_{\alpha}\mathbf{o} + \alpha\mathbf{o} \ne (\alpha + \beta) \cdot \mathbf{T}.
         \end{gather}
         When $\mathbf{I} - \mathbf{M}$ is invertible --- that is, when none of the eigenvalues of $\mathbf{M}$ are equal to 1 --- we can express a transform as a matrix transformation about a single invariant centre, with no offset:
-
-
-        END DELETED BIT
-        
-       BEGIN NEW BIT
-       
-        If commutivity is forced by averaging the offset contributions from both permutations of the operands then associativity breaks down. The same underlying structure precludes a linear interpolation in operator $\cdot$ akin to \labelcref{eqn:translation_cdot} in the presence of a non-identical matrix.
-
-        When $\mathbf{I} - \mathbf{M}$ is invertible, we can express a transform as a matrix transformation about a single invariant centre, with no offset:
-
-END NEW BIT
         \begin{gather}
           \mathbf{Tp} = \mathbf{Mp} + \mathbf{o} = \mathbf{M}(\mathbf{p}-\mathbf{c}) + \mathbf{c} \\
           \mathbf{o} = (\mathbf{I} - \mathbf{M})\mathbf{c} \\
