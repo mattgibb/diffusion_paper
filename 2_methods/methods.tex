@@ -12,7 +12,6 @@
       \caption{(a) Sample full-resolution histology slice; (b) Corresponding block-face image. (c) and (d) show zoomed-in versions of the regions in the green/red squares in (a) and (b). The difference in image detail is apparent.}
       \label{fig:raw_images}
     \end{figure}
-
     Hearts were isolated from female rats, fixed and embedded in black wax. The wax blocks were then serially sectioned at 10$\mu$m thickness using a microtome. An image of the top surface of the block -- referred to as a `block face image' from here on -- was taken with 25$\mu$m resolution after each slicing. Each slice was relaxed and rehydrated, before histology imaging was performed using a 5x objective with 1.1$\mu$m resolution, the resultant images being referred to as `histology images' from here on. Gibb et al. \cite{Gibb2012} give a detailed account of the experimental methods. Examples of the block face and slice images are displayed in Figure~\ref{fig:raw_images}.
   % subsection image_acquisition (end)
   
@@ -62,7 +61,6 @@ A mean squares difference metric proved most robust over normalised correlation 
           - (f(x_{i-1}, t_n) - f(x_i, t_n))) \label{eqn:1d_diffusion_operator}
         \end{aligned}
   	  \end{equation} 
-  	  
   	  which we can write in simplified notation using:
       \begin{equation}
         \begin{aligned}
@@ -87,7 +85,6 @@ A mean squares difference metric proved most robust over normalised correlation 
 			1 \cdot \mathbf{T} = \mathbf{T} \label{eqn:identity} \\
 			(\alpha \cdot \mathbf{T}) (\beta \cdot \mathbf{T}) = (\alpha + \beta) \cdot \mathbf{T} \label{eqn:distributivity}
 		\end{gather}
-	 	
 	  The operator $\oplus$ takes two transform operands. Commutativity must hold if the diffusion is to be symmetric i.e. behave identically if the order of the slices is reversed. If statistics are to be calculated on more than two transformations, it is also necessary for associativity to hold, so that the order of application of operator $\oplus$ is not preferential to any subset of transform operands. That is,
     \begin{gather}
       \forall \mathbf{S}, \mathbf{T} : \mathbf{S} \oplus \mathbf{T} = \mathbf{T} \oplus \mathbf{S} \label{eqn:commutativity} \\
@@ -126,7 +123,6 @@ A mean squares difference metric proved most robust over normalised correlation 
         \begin{equation}
             \alpha \cdot \mathbf{T} = \mathbf{R}(\alpha\theta).
         \end{equation}
-       
             In the case of similarity transforms with no offset, $\mathbf{M}$ is a rotation matrix $\mathbf{R}$ multiplied by an enlargement $\sigma$:
             \begin{equation}
                   \mathbf{T} = \sigma\mathbf{R}(\theta).
@@ -144,7 +140,6 @@ A mean squares difference metric proved most robust over normalised correlation 
                                                                      &= \mathbf{S} \oplus (\mathbf{T} \oplus \mathbf{U}).
                 \end{split}
             \end{gather}
-       
        In the more general case of diagonalisable affine matrix transformations, in the absence of translations, and when $\mathbf{S}$ and $\mathbf{T}$ can be diagonalised by the same matrix $\mathbf{V}$ i.e. $\mathbf{S} = \mathbf{VD_SV}^{-1}$ and $\mathbf{T} = \mathbf{VD_TV}^{-1}$, commutativity still holds for serial application:
             \begin{equation}
                 \begin{split}
@@ -174,7 +169,6 @@ A mean squares difference metric proved most robust over normalised correlation 
         \begin{equation}
           e^{\mathbf{M}} = \sum_{k=0}^{\infty}\frac{1}{k!}\mathbf{M}^k. \label{eqn:matrix_exponential}
         \end{equation}
-
         START DELETED BIT
 
                 Conversely, a logarithm $\mathbf{L}$ of a matrix $\mathbf{M}$ is another matrix such that $e^\mathbf{L} = \mathbf{M}$. For any invertible matrix $\mathbf{Y}$, it is clear that
@@ -219,7 +213,6 @@ A mean squares difference metric proved most robust over normalised correlation 
                                                                &= \mathbf{M_S}\oplus(\mathbf{M_T}\oplus\mathbf{M_U}).
           \end{split}
         \end{gather}
-
 BEGIN DELETED BIT
 
         It is pleasing to note that this new formula coincides with the special cases of rotation, similarity and diagonalisability discussed previously, since whenever the two matrices commute,
@@ -230,9 +223,6 @@ BEGIN DELETED BIT
                                 &= \mathbf{M_S} \oplus \mathbf{M_T}.
             \end{split}
         \end{equation}
-
-
-
 END DELETED BIT
 
         This `log-Euclidian' approach is expounded with great mathematical rigour in \cite{Arsigny2005}. However, being motivated by the interpolation of MRI data, the treatise is limited to tensors; that is, symmetric matrices with no translation.
@@ -241,8 +231,6 @@ END DELETED BIT
         \begin{equation}
           (\mathbf{S} \oplus \mathbf{T})\mathbf{p} = (\mathbf{M_S} \oplus \mathbf{M_T})\mathbf{p} + \mathbf{M_So_T} + \mathbf{o_S} \ne (\mathbf{T} \oplus \mathbf{S})\mathbf{p}.
         \end{equation}
-        
-        
         BEGIN DELETED BIT
 
         If commutivity is forced, by averaging the offset contributions from both permutations of the operands i.e.
@@ -269,7 +257,6 @@ END DELETED BIT
         When $\mathbf{I} - \mathbf{M}$ is invertible, we can express a transform as a matrix transformation about a single invariant centre, with no offset:
 
 END NEW BIT
-
         \begin{gather}
           \mathbf{Tp} = \mathbf{Mp} + \mathbf{o} = \mathbf{M}(\mathbf{p}-\mathbf{c}) + \mathbf{c} \\
           \mathbf{o} = (\mathbf{I} - \mathbf{M})\mathbf{c} \\
@@ -331,7 +318,6 @@ END NEW BIT
         \begin{equation}
           (\alpha \cdot \mathbf{S}) \oplus (\alpha \cdot \mathbf{T}) = \alpha \cdot (\mathbf{S} \oplus \mathbf{T}).
         \end{equation}
-        
         In the case where $\mathbf{M} - \mathbf{I}$ is singular and there is no central invariate coordinate along the singular dimensions, it is of course natural that operator $\cdot$ interpolates the translation coordinates linearly along those dimensions as in (\ref{eqn:translation_cdot}), and that operator $\oplus$ sums translations arithmetically as in (\ref{eqn:translation_oplus}).
         
         A similar Lie theoretical approach must be taken when implementing operators $\cdot$ and $\oplus$ for more general non-rigid transforms, such as displacement field transforms. However, any differentiable transform will approximate an affine transformation at scales smaller than its curvature, and the implementations expounded here can be used in a locally affine framework to produce deformable transforms.
